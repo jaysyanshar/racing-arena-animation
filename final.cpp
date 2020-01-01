@@ -1477,6 +1477,25 @@ void track(void) {
 	car(mCar2PosX, carPosY, mCar2PosZ, 0.5*mTrackBlockSize, 0.4*mTrackBlockSize, 0.4*mTrackBlockSize, -(mCarInitAngle+mCar2Angle), 0.7, 0.2, 0.2);
 }
 
+void grass(void) {
+	float xPos = mTrackStartPosX + (mTrackBlockSize * 11);
+	float zPos = mTrackStartPosZ + (mTrackBlockSize * 5);
+	float yPos = 0.0;
+	float dx = 0.5 * mTrackBlockSize;
+	float dy = 0.1;
+	float dz = 0.5 * mTrackBlockSize;
+	texScale = dx;
+	
+	for(int i = 0; i < 30; i++) {
+		float zTemp = zPos;
+		for(int j = 0; j < 20; j++) {
+			cube(xPos, yPos, zTemp, dx, dy, dz, 0);
+			zTemp -= mTrackBlockSize;
+		}
+		xPos -= mTrackBlockSize;
+	}
+}
+
 
 /*
  *  OpenGL (GLUT) calls this routine to display the scene
@@ -1571,10 +1590,12 @@ void display()
 //  . Street surface 
    glColor3f(0.4, 0.4, 0.4);
    glBindTexture(GL_TEXTURE_2D,_textureAsphalt);
-//   texScale = 0.5;   
-   
-   // track
+//   texScale = 0.5;
    track();
+   
+   glColor3f(0.4, 0.6, 0.2);
+   glBindTexture(GL_TEXTURE_2D, _textureGrass);
+   grass();
 
 // //  Street Surface - Side Streets
 //   glColor3f(0.4, 0.4, 0.4);
