@@ -103,11 +103,13 @@ float Specular[]  = {0.01*0,0.01*0,0.01*0,1.0};
 float mTrackBlockSize = 4;
 float mTrackStartPosX = 12;
 float mTrackStartPosZ = 15;
+float mCarStepsInc = 0.1;
+float mCarInitAngle = 180;
+int mCarMoveDelay = 5; // miliseconds per car steps
 float mCar1PosX = mTrackStartPosX;
 float mCar1PosZ = mTrackStartPosZ;
-float mCar1Angle = 180;
+float mCar1Angle = mCarInitAngle;
 float mCar1Steps = 0;
-float mCarStepsInc = 0.1;
 
 /*
  *  Draw a cube
@@ -1648,15 +1650,14 @@ void car1Timer(void) {
 	
 	// lane 1, step 0 - 12, direction -x
 	if(steps >= 0 && steps < 12) {
+		if(mCar1Angle < mCarInitAngle) mCar1Angle++;
 		mCar1PosX -= mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 1, step 12 - 14, turn right(+), from 180 to 270
+	// turn 1, step 12 - 14, turn right(+), from 180 to 270 (+90 degree from initAngle)
 	if(steps >= 12 && steps < 14) {
-		if(mCar1Angle < 270) {
-			mCar1Angle++;
-		}
+		if(mCar1Angle < mCarInitAngle + 90) mCar1Angle++;
 		mCar1PosX -= mCarStepsInc / 2;
 		mCar1PosZ -= mCarStepsInc / 2;
 		mCar1Steps += mCarStepsInc;
@@ -1664,7 +1665,85 @@ void car1Timer(void) {
 	
 	// lane 2, step 14 - 16, direction -z
 	if(steps >= 14 && steps < 16) {
-		
+		if(mCar1Angle < mCarInitAngle + 90) mCar1Angle++;
+		mCar1PosZ -= mCarStepsInc;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// turn 2, step 16 - 18, turn right(+), from 270 to 360 (+180 degree from initAngle)
+	if(steps >= 16 && steps < 18) {
+		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		mCar1PosX += mCarStepsInc / 2;
+		mCar1PosZ -= mCarStepsInc / 2;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// lane 3, step 18 - 20, direction +x
+	if(steps >= 18 && steps < 20) {
+		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		mCar1PosX += mCarStepsInc;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// turn 3, step 20 - 24, turn left(-), from 360 to 270 (+90 degree from initAngle)
+	if(steps >= 20 && steps < 24) {
+		if(mCar1Angle > mCarInitAngle + 90) mCar1Angle--;
+		if(steps < 21) {
+			mCar1PosX += mCarStepsInc;
+		}
+		else if(steps >= 21 && steps < 23) {
+			mCar1PosX += mCarStepsInc / 2;
+			mCar1PosZ -= mCarStepsInc / 2;
+		}
+		else if(steps >= 23) {
+			mCar1PosZ -= mCarStepsInc;
+		}
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// lane 4, step 24 - 26, direction -z
+	if(steps >= 24 && steps < 26) {
+		if(mCar1Angle > mCarInitAngle + 90) mCar1Angle--;
+		mCar1PosZ -= mCarStepsInc;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// turn 4, step 26 - 28, turn right(+), from 270 to 360 (+180 degree from initAngle)
+	if(steps >= 26 && steps < 28) {
+		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		mCar1PosX += mCarStepsInc / 2;
+		mCar1PosZ -= mCarStepsInc / 2;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// lane 5, step 28 - 40, direction +x
+	if(steps >= 28 && steps < 40) {
+		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		mCar1PosX += mCarStepsInc;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// turn 5, step 40 - 42, turn right(+), from 360 to 450 (+270 degree from initAngle)
+	if(steps >= 40 && steps < 42) {
+		if(mCar1Angle < mCarInitAngle + 270) mCar1Angle++;
+		mCar1PosX += mCarStepsInc / 2;
+		mCar1PosZ += mCarStepsInc / 2;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// lane 6, step 42 - 44, direction +z
+	if(steps >= 42 && steps < 44) {
+		if(mCar1Angle < mCarInitAngle + 270) mCar1Angle++;
+		mCar1PosZ += mCarStepsInc;
+		mCar1Steps += mCarStepsInc;
+	}
+	
+	// turn 6, step 44 - 46, turn right(+), from 450 to 540 (+360 degree from initAngle)
+	if(steps >= 44 && steps < 46) {
+		if(mCar1Angle < mCarInitAngle + 360) mCar1Angle++;
+		mCar1PosX -= mCarStepsInc / 2;
+		mCar1PosZ += mCarStepsInc / 2;
+		mCar1Steps += mCarStepsInc;
 	}
 }
 
@@ -1673,7 +1752,7 @@ void timer(int miliseconds) {
 	car1Timer();
 	
 	glutPostRedisplay();
-	glutTimerFunc(5, timer, 0);
+	glutTimerFunc(mCarMoveDelay, timer, 0);
 }
 
 /*
@@ -1822,7 +1901,7 @@ int main(int argc,char* argv[])
    glutSpecialFunc(special);
    glutKeyboardFunc(key);
    glutIdleFunc(idle);
-   glutTimerFunc(5, timer, 0);
+   glutTimerFunc(mCarMoveDelay, timer, 0);
    //  Pass control to GLUT so it can interact with the user
    ErrCheck("init");
    glutMainLoop();
