@@ -1362,17 +1362,17 @@ void track(void) {
 	texScale = dx;
 	int i;
 	
-	// lane 1, step 0 - 12, -x
+	// lane 1, step 0 - 12, direction -x
 	for(i = 0; i <= 12; i++) {
 		cube(xPos, yPos, zPos, dx, dy, dz, 0);
 //		cube(xPos, yPos, zPos+blockSize, dx, dy, dz, 0);
 		xPos -= blockSize;
 	}
 	
-	// turn 1, step 13, -x, quadran 3 (270 degree)
+	// turn 1, step 13, quadran 3 (270 degree)
 	curve(xPos+(blockSize/2), yPos, zPos-(blockSize/2), dx, dy, dz, 270, radius);
 
-	// lane 2, step 14 - 16, -z
+	// lane 2, step 14 - 16, direction -z
 	zPos -= blockSize;
 	for(i = 14; i <= 16; i++) {
 		cube(xPos, yPos, zPos, dx, dy, dz, 0);
@@ -1382,7 +1382,7 @@ void track(void) {
 	// turn 2, step 17, quadran 2 (180 degree)
 	curve(xPos+(blockSize/2), yPos, zPos+(blockSize/2), dx, dy, dz, 180, radius);
 	
-	// lane 3, step 18 - 20, +x
+	// lane 3, step 18 - 20, direction +x
 	xPos += blockSize;
 	for(i = 18; i <= 20; i++) {
 		cube(xPos, yPos, zPos, dx, dy, dz, 0);
@@ -1392,7 +1392,7 @@ void track(void) {
 	// turn 3, step 21, quadran 4 (360 degree)
 	curve(xPos-(blockSize/2), yPos, zPos-(blockSize/2), dx, dy, dz, 360, radius);
 	
-	// lane 4, step 22 - 24, -z
+	// lane 4, step 22 - 24, direction -z
 	zPos -= blockSize;
 	for(i = 22; i <= 24; i++) {
 		cube(xPos, yPos, zPos, dx, dy, dz, 0);
@@ -1401,6 +1401,46 @@ void track(void) {
 	
 	// turn 4, step 25, quadran 2 (180 degree)
 	curve(xPos+(blockSize/2), yPos, zPos+(blockSize/2), dx, dy, dz, 180, radius);
+	
+	// lane 5, step 26 - 38, direction +x
+	xPos += blockSize;
+	for(i = 26; i <= 38; i++) {
+		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+		xPos += blockSize;
+	}
+	
+	// turn 5, step 39, quadran 1 (90 degree)
+	curve(xPos-(blockSize/2), yPos, zPos+(blockSize/2), dx, dy, dz, 90, radius);
+	
+	// lane 6, step 40 - 42, direction +z
+	zPos += blockSize;
+	for(i = 40; i <= 42; i++) {
+		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+		zPos += blockSize;
+	}
+	
+	// turn 6, step 43, quadran 4 (360 degree)
+	curve(xPos-(blockSize/2), yPos, zPos-(blockSize/2), dx, dy, dz, 360, radius);
+	
+	// lane 7, step 44 - 46, direction -x
+	xPos -= blockSize;
+	for(i = 44; i <= 46; i++) {
+		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+		xPos -= blockSize;
+	}
+	
+	// turn 7, step 47, quadran 2 (180 degree)
+	curve(xPos+(blockSize/2), yPos, zPos+(blockSize/2), dx, dy, dz, 180, radius);
+	
+	// lane 8, step 48 - 50, direction +z
+	zPos += blockSize;
+	for(i = 48; i <= 50; i++) {
+		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+		zPos += blockSize;
+	}
+	
+	// turn 8, step 51, quadran 4 (360 degree)
+	curve(xPos-(blockSize/2), yPos, zPos-(blockSize/2), dx, dy, dz, 360, radius);
 	
 //	// Street 1
 //	for(i = 0; i < 6; i++){
