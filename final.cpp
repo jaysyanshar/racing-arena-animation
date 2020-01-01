@@ -112,7 +112,7 @@ float mCar1PosZ = mTrackStartPosZ;
 float mCar1Angle = 0;
 float mCar1Steps = 0;
 
-float mCar2StepsInc = 0.115;
+float mCar2StepsInc = 0.1135;
 float mCar2PosX = mTrackStartPosX;
 float mCar2PosZ = mTrackStartPosZ + mTrackBlockSize;
 float mCar2Angle = 0;
@@ -1799,6 +1799,9 @@ void car1Timer(void) {
 	
 	// reset for loop
 	if(steps >= 56) {
+		mCar1PosX = mTrackStartPosX;
+		mCar1PosZ = mTrackStartPosZ;
+		mCar1Angle = 0;
 		mCar1Steps = 0;
 	}
 }
@@ -1981,6 +1984,9 @@ void car2Timer(void) {
 	
 	// reset for loop
 	if(steps >= 64) {
+		mCar2PosX = mTrackStartPosX;
+		mCar2PosZ = mTrackStartPosZ + mTrackBlockSize;
+		mCar2Angle = 0;
 		mCar2Steps = 0;
 	}
 }
