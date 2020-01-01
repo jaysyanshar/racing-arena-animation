@@ -103,13 +103,20 @@ float Specular[]  = {0.01*0,0.01*0,0.01*0,1.0};
 float mTrackBlockSize = 4;
 float mTrackStartPosX = 12;
 float mTrackStartPosZ = 15;
-float mCarStepsInc = 0.1;
 float mCarInitAngle = 180;
 int mCarMoveDelay = 5; // miliseconds per car steps
+
+float mCar1StepsInc = 0.1;
 float mCar1PosX = mTrackStartPosX;
 float mCar1PosZ = mTrackStartPosZ;
 float mCar1Angle = 0;
 float mCar1Steps = 0;
+
+float mCar2StepsInc = 0.115;
+float mCar2PosX = mTrackStartPosX;
+float mCar2PosZ = mTrackStartPosZ + mTrackBlockSize;
+float mCar2Angle = 0;
+float mCar2Steps = 0;
 
 /*
  *  Draw a cube
@@ -1465,6 +1472,9 @@ void track(void) {
 	
 	// car 1 blue
 	car(mCar1PosX, carPosY, mCar1PosZ, 0.5*mTrackBlockSize, 0.4*mTrackBlockSize, 0.4*mTrackBlockSize, -(mCarInitAngle+mCar1Angle), 0.2, 0.2, 0.7);
+	
+	// car 2 red
+	car(mCar2PosX, carPosY, mCar2PosZ, 0.5*mTrackBlockSize, 0.4*mTrackBlockSize, 0.4*mTrackBlockSize, -(mCarInitAngle+mCar2Angle), 0.7, 0.2, 0.2);
 }
 
 
@@ -1654,137 +1664,137 @@ void car1Timer(void) {
 	// lane 1, step 0 - 12, direction -x
 	if(steps >= 0 && steps < 12) {
 		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
-		mCar1PosX -= mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX -= mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 1, step 12 - 14, turn right(+), from 0 to 90
 	if(steps >= 12 && steps < 14) {
 		if(mCar1Angle < 90) mCar1Angle++;
-		mCar1PosX -= mCarStepsInc / 2;
-		mCar1PosZ -= mCarStepsInc / 2;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX -= mCar1StepsInc / 2;
+		mCar1PosZ -= mCar1StepsInc / 2;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// lane 2, step 14 - 16, direction -z
 	if(steps >= 14 && steps < 16) {
 		if(mCar1Angle < 90) mCar1Angle++;
-		mCar1PosZ -= mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosZ -= mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 2, step 16 - 18, turn right(+), from 90 to 180
 	if(steps >= 16 && steps < 18) {
 		if(mCar1Angle < 180) mCar1Angle++;
-		mCar1PosX += mCarStepsInc / 2;
-		mCar1PosZ -= mCarStepsInc / 2;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX += mCar1StepsInc / 2;
+		mCar1PosZ -= mCar1StepsInc / 2;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// lane 3, step 18 - 20, direction +x
 	if(steps >= 18 && steps < 20) {
 		if(mCar1Angle < 180) mCar1Angle++;
-		mCar1PosX += mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX += mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 3, step 20 - 24, turn left(-), from 180 to 90
 	if(steps >= 20 && steps < 24) {
 		if(mCar1Angle > 90) mCar1Angle--;
 		if(steps < 21) {
-			mCar1PosX += mCarStepsInc;
+			mCar1PosX += mCar1StepsInc;
 		}
 		else if(steps >= 21 && steps < 23) {
-			mCar1PosX += mCarStepsInc / 2;
-			mCar1PosZ -= mCarStepsInc / 2;
+			mCar1PosX += mCar1StepsInc / 2;
+			mCar1PosZ -= mCar1StepsInc / 2;
 		}
 		else if(steps >= 23) {
-			mCar1PosZ -= mCarStepsInc;
+			mCar1PosZ -= mCar1StepsInc;
 		}
-		mCar1Steps += mCarStepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// lane 4, step 24 - 26, direction -z
 	if(steps >= 24 && steps < 26) {
 		if(mCar1Angle > 90) mCar1Angle--;
-		mCar1PosZ -= mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosZ -= mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 4, step 26 - 28, turn right(+), from 90 to 180
 	if(steps >= 26 && steps < 28) {
 		if(mCar1Angle < 180) mCar1Angle++;
-		mCar1PosX += mCarStepsInc / 2;
-		mCar1PosZ -= mCarStepsInc / 2;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX += mCar1StepsInc / 2;
+		mCar1PosZ -= mCar1StepsInc / 2;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// lane 5, step 28 - 40, direction +x
 	if(steps >= 28 && steps < 40) {
 		if(mCar1Angle < 180) mCar1Angle++;
-		mCar1PosX += mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX += mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 5, step 40 - 42, turn right(+), from 180 to 270
 	if(steps >= 40 && steps < 42) {
 		if(mCar1Angle < 270) mCar1Angle++;
-		mCar1PosX += mCarStepsInc / 2;
-		mCar1PosZ += mCarStepsInc / 2;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX += mCar1StepsInc / 2;
+		mCar1PosZ += mCar1StepsInc / 2;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// lane 6, step 42 - 44, direction +z
 	if(steps >= 42 && steps < 44) {
 		if(mCar1Angle < 270) mCar1Angle++;
-		mCar1PosZ += mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosZ += mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 6, step 44 - 46, turn right(+), 270 to 360/0
 	if(steps >= 44 && steps < 46) {
 		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
-		mCar1PosX -= mCarStepsInc / 2;
-		mCar1PosZ += mCarStepsInc / 2;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX -= mCar1StepsInc / 2;
+		mCar1PosZ += mCar1StepsInc / 2;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// lane 7, step 46 - 48, direction -x
 	if(steps >= 46 && steps < 48) {
 		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
-		mCar1PosX -= mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX -= mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 7, step 48 - 52, turn left(-), from 0 to 270
 	if(steps >= 48 && steps < 52) {
 		if(mCar1Angle <= 0 || mCar1Angle > 270) mCar1Angle--;
 		if(steps < 49) {
-			mCar1PosX -= mCarStepsInc;
+			mCar1PosX -= mCar1StepsInc;
 		}
 		else if(steps >= 49 && steps < 51) {
-			mCar1PosX -= mCarStepsInc / 2;
-			mCar1PosZ += mCarStepsInc / 2;
+			mCar1PosX -= mCar1StepsInc / 2;
+			mCar1PosZ += mCar1StepsInc / 2;
 		}
 		else if(steps >= 51) {
-			mCar1PosZ += mCarStepsInc;
+			mCar1PosZ += mCar1StepsInc;
 		}
-		mCar1Steps += mCarStepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// lane 8, step 52 - 54, direction +z
 	if(steps >= 52 && steps < 54) {
 		if(mCar1Angle <= 0 || mCar1Angle > 270) mCar1Angle--;
-		mCar1PosZ += mCarStepsInc;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosZ += mCar1StepsInc;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// turn 8, step 54 - 56, turn right(+) from 270 to 360/0
 	if(steps >= 54 && steps < 56) {
 		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
-		mCar1PosX -= mCarStepsInc / 2;
-		mCar1PosZ += mCarStepsInc / 2;
-		mCar1Steps += mCarStepsInc;
+		mCar1PosX -= mCar1StepsInc / 2;
+		mCar1PosZ += mCar1StepsInc / 2;
+		mCar1Steps += mCar1StepsInc;
 	}
 	
 	// reset for loop
@@ -1793,9 +1803,192 @@ void car1Timer(void) {
 	}
 }
 
+void car2Timer(void) {
+	
+	float steps = mCar2Steps / mTrackBlockSize;
+	
+	if(mCar2Angle > 359) mCar2Angle = 0;
+	else if(mCar2Angle < 0) mCar2Angle = 359;
+	
+	// lane 1, step 0 - 12, direction -x
+	if(steps >= 0 && steps < 12) {
+		if(mCar2Angle > 0 && mCar2Angle < 360) mCar2Angle++;
+		mCar2PosX -= mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 1, step 12 - 16, turn right(+), from 0 to 90
+	if(steps >= 12 && steps < 16) {
+		if(mCar2Angle < 90) mCar2Angle++;
+		if(steps < 13) {
+			mCar2PosX -= mCar2StepsInc;
+		}
+		else if(steps >= 13 && steps < 15) {
+			mCar2PosX -= mCar2StepsInc / 2;
+			mCar2PosZ -= mCar2StepsInc / 2;
+		}
+		else if(steps >= 15) {
+			mCar2PosZ -= mCar2StepsInc;
+		}
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// lane 2, step 16 - 18, direction -z
+	if(steps >= 16 && steps < 18) {
+		if(mCar2Angle < 90) mCar2Angle++;
+		mCar2PosZ -= mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 2, step 18 - 22, turn right(+), from 90 to 180
+	if(steps >= 18 && steps < 22) {
+		if(mCar2Angle < 180) mCar2Angle++;
+		if(steps < 19) {
+			mCar2PosZ -= mCar2StepsInc;
+		}
+		else if(steps >= 19 && steps < 21) {
+			mCar2PosX += mCar2StepsInc / 2;
+			mCar2PosZ -= mCar2StepsInc / 2;
+		}
+		else if(steps >= 21) {
+			mCar2PosX += mCar2StepsInc;
+		}
+		
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// lane 3, step 22 - 24, direction +x
+	if(steps >= 22 && steps < 24) {
+		if(mCar2Angle < 180) mCar2Angle++;
+		mCar2PosX += mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 3, step 24 - 26, turn left(-), from 180 to 90
+	if(steps >= 24 && steps < 26) {
+		if(mCar2Angle > 90) mCar2Angle--;
+		mCar2PosX += mCar2StepsInc / 2;
+		mCar2PosZ -= mCar2StepsInc / 2;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// lane 4, step 26 - 28, direction -z
+	if(steps >= 26 && steps < 28) {
+		if(mCar2Angle > 90) mCar2Angle--;
+		mCar2PosZ -= mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 4, step 28 - 32, turn right(+), from 90 to 180
+	if(steps >= 28 && steps < 32) {
+		if(mCar2Angle < 180) mCar2Angle++;
+		if(steps < 29) {
+			mCar2PosZ -= mCar2StepsInc;
+		}
+		else if(steps >= 29 && steps < 31) {
+			mCar2PosX += mCar2StepsInc / 2;
+			mCar2PosZ -= mCar2StepsInc / 2;
+		}
+		else if(steps >= 31) {
+			mCar2PosX += mCar2StepsInc;
+		}
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// lane 5, step 32 - 44, direction +x
+	if(steps >= 32 && steps < 44) {
+		if(mCar2Angle < 180) mCar2Angle++;
+		mCar2PosX += mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 5, step 44 - 48, turn right(+), from 180 to 270
+	if(steps >= 44 && steps < 48) {
+		if(mCar2Angle < 270) mCar2Angle++;
+		if(steps < 45) {
+			mCar2PosX += mCar2StepsInc;
+		}
+		else if(steps >= 45 && steps < 47) {
+			mCar2PosX += mCar2StepsInc / 2;
+			mCar2PosZ += mCar2StepsInc / 2;
+		}
+		else if(steps >= 47) {
+			mCar2PosZ += mCar2StepsInc;
+		}
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// lane 6, step 48 - 50, direction +z
+	if(steps >= 48 && steps < 50) {
+		if(mCar2Angle < 270) mCar2Angle++;
+		mCar2PosZ += mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 6, step 50 - 54, turn right(+), 270 to 360/0
+	if(steps >= 50 && steps < 54) {
+		if(mCar2Angle > 0 && mCar2Angle < 360) mCar2Angle++;
+		if(steps < 51) {
+			mCar2PosZ += mCar2StepsInc;
+		}
+		else if(steps >= 51 && steps < 53) {
+			mCar2PosX -= mCar2StepsInc / 2;
+			mCar2PosZ += mCar2StepsInc / 2;
+		}
+		else if(steps >= 53) {
+			mCar2PosX -= mCar2StepsInc;
+		}
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// lane 7, step 54 - 56, direction -x
+	if(steps >= 54 && steps < 56) {
+		if(mCar2Angle > 0 && mCar2Angle < 360) mCar2Angle++;
+		mCar2PosX -= mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 7, step 56 - 58, turn left(-), from 0 to 270
+	if(steps >= 56 && steps < 58) {
+		if(mCar2Angle <= 0 || mCar2Angle > 270) mCar2Angle--;
+		mCar2PosX -= mCar2StepsInc / 2;
+		mCar2PosZ += mCar2StepsInc / 2;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// lane 8, step 58 - 60, direction +z
+	if(steps >= 58 && steps < 60) {
+		if(mCar2Angle <= 0 || mCar2Angle > 270) mCar2Angle--;
+		mCar2PosZ += mCar2StepsInc;
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// turn 8, step 60 - 64, turn right(+) from 270 to 360/0
+	if(steps >= 60 && steps < 64) {
+		if(mCar2Angle > 0 && mCar2Angle < 360) mCar2Angle++;
+		if(steps < 61) {
+			mCar2PosZ += mCar2StepsInc;
+		}
+		else if(steps >= 61 && steps < 63) {
+			mCar2PosX -= mCar2StepsInc / 2;
+			mCar2PosZ += mCar2StepsInc / 2;
+		}
+		else if(steps >= 63) {
+			mCar2PosX -= mCar2StepsInc;
+		}
+		mCar2Steps += mCar2StepsInc;
+	}
+	
+	// reset for loop
+	if(steps >= 64) {
+		mCar2Steps = 0;
+	}
+}
+
 void timer(int miliseconds) {
 	
 	car1Timer();
+	car2Timer();
 	
 	glutPostRedisplay();
 	glutTimerFunc(mCarMoveDelay, timer, 0);
