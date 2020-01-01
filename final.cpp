@@ -108,7 +108,7 @@ float mCarInitAngle = 180;
 int mCarMoveDelay = 5; // miliseconds per car steps
 float mCar1PosX = mTrackStartPosX;
 float mCar1PosZ = mTrackStartPosZ;
-float mCar1Angle = mCarInitAngle;
+float mCar1Angle = 0;
 float mCar1Steps = 0;
 
 /*
@@ -1464,7 +1464,7 @@ void track(void) {
 	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
 	
 	// car 1 blue
-	car(mCar1PosX, carPosY, mCar1PosZ, 0.5*mTrackBlockSize, 0.4*mTrackBlockSize, 0.4*mTrackBlockSize, -mCar1Angle, 0.2, 0.2, 0.7);
+	car(mCar1PosX, carPosY, mCar1PosZ, 0.5*mTrackBlockSize, 0.4*mTrackBlockSize, 0.4*mTrackBlockSize, -(mCarInitAngle+mCar1Angle), 0.2, 0.2, 0.7);
 }
 
 
@@ -1648,16 +1648,19 @@ void car1Timer(void) {
 	
 	float steps = mCar1Steps / mTrackBlockSize;
 	
+	if(mCar1Angle > 359) mCar1Angle = 0;
+	else if(mCar1Angle < 0) mCar1Angle = 359;
+	
 	// lane 1, step 0 - 12, direction -x
 	if(steps >= 0 && steps < 12) {
-		if(mCar1Angle < mCarInitAngle) mCar1Angle++;
+		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
 		mCar1PosX -= mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 1, step 12 - 14, turn right(+), from 180 to 270 (+90 degree from initAngle)
+	// turn 1, step 12 - 14, turn right(+), from 0 to 90
 	if(steps >= 12 && steps < 14) {
-		if(mCar1Angle < mCarInitAngle + 90) mCar1Angle++;
+		if(mCar1Angle < 90) mCar1Angle++;
 		mCar1PosX -= mCarStepsInc / 2;
 		mCar1PosZ -= mCarStepsInc / 2;
 		mCar1Steps += mCarStepsInc;
@@ -1665,14 +1668,14 @@ void car1Timer(void) {
 	
 	// lane 2, step 14 - 16, direction -z
 	if(steps >= 14 && steps < 16) {
-		if(mCar1Angle < mCarInitAngle + 90) mCar1Angle++;
+		if(mCar1Angle < 90) mCar1Angle++;
 		mCar1PosZ -= mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 2, step 16 - 18, turn right(+), from 270 to 360 (+180 degree from initAngle)
+	// turn 2, step 16 - 18, turn right(+), from 90 to 180
 	if(steps >= 16 && steps < 18) {
-		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		if(mCar1Angle < 180) mCar1Angle++;
 		mCar1PosX += mCarStepsInc / 2;
 		mCar1PosZ -= mCarStepsInc / 2;
 		mCar1Steps += mCarStepsInc;
@@ -1680,14 +1683,14 @@ void car1Timer(void) {
 	
 	// lane 3, step 18 - 20, direction +x
 	if(steps >= 18 && steps < 20) {
-		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		if(mCar1Angle < 180) mCar1Angle++;
 		mCar1PosX += mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 3, step 20 - 24, turn left(-), from 360 to 270 (+90 degree from initAngle)
+	// turn 3, step 20 - 24, turn left(-), from 180 to 90
 	if(steps >= 20 && steps < 24) {
-		if(mCar1Angle > mCarInitAngle + 90) mCar1Angle--;
+		if(mCar1Angle > 90) mCar1Angle--;
 		if(steps < 21) {
 			mCar1PosX += mCarStepsInc;
 		}
@@ -1703,14 +1706,14 @@ void car1Timer(void) {
 	
 	// lane 4, step 24 - 26, direction -z
 	if(steps >= 24 && steps < 26) {
-		if(mCar1Angle > mCarInitAngle + 90) mCar1Angle--;
+		if(mCar1Angle > 90) mCar1Angle--;
 		mCar1PosZ -= mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 4, step 26 - 28, turn right(+), from 270 to 360 (+180 degree from initAngle)
+	// turn 4, step 26 - 28, turn right(+), from 90 to 180
 	if(steps >= 26 && steps < 28) {
-		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		if(mCar1Angle < 180) mCar1Angle++;
 		mCar1PosX += mCarStepsInc / 2;
 		mCar1PosZ -= mCarStepsInc / 2;
 		mCar1Steps += mCarStepsInc;
@@ -1718,14 +1721,14 @@ void car1Timer(void) {
 	
 	// lane 5, step 28 - 40, direction +x
 	if(steps >= 28 && steps < 40) {
-		if(mCar1Angle < mCarInitAngle + 180) mCar1Angle++;
+		if(mCar1Angle < 180) mCar1Angle++;
 		mCar1PosX += mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 5, step 40 - 42, turn right(+), from 360 to 450 (+270 degree from initAngle)
+	// turn 5, step 40 - 42, turn right(+), from 180 to 270
 	if(steps >= 40 && steps < 42) {
-		if(mCar1Angle < mCarInitAngle + 270) mCar1Angle++;
+		if(mCar1Angle < 270) mCar1Angle++;
 		mCar1PosX += mCarStepsInc / 2;
 		mCar1PosZ += mCarStepsInc / 2;
 		mCar1Steps += mCarStepsInc;
@@ -1733,14 +1736,14 @@ void car1Timer(void) {
 	
 	// lane 6, step 42 - 44, direction +z
 	if(steps >= 42 && steps < 44) {
-		if(mCar1Angle < mCarInitAngle + 270) mCar1Angle++;
+		if(mCar1Angle < 270) mCar1Angle++;
 		mCar1PosZ += mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 6, step 44 - 46, turn right(+), from 450 to 540 (+360 degree from initAngle)
+	// turn 6, step 44 - 46, turn right(+), 270 to 360/0
 	if(steps >= 44 && steps < 46) {
-		if(mCar1Angle < mCarInitAngle + 360) mCar1Angle++;
+		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
 		mCar1PosX -= mCarStepsInc / 2;
 		mCar1PosZ += mCarStepsInc / 2;
 		mCar1Steps += mCarStepsInc;
@@ -1748,14 +1751,14 @@ void car1Timer(void) {
 	
 	// lane 7, step 46 - 48, direction -x
 	if(steps >= 46 && steps < 48) {
-		if(mCar1Angle < mCarInitAngle + 360) mCar1Angle++;
+		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
 		mCar1PosX -= mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 7, step 48 - 52, turn left(-), from 540 to 450 (+270 degree from initAngle)
+	// turn 7, step 48 - 52, turn left(-), from 0 to 270
 	if(steps >= 48 && steps < 52) {
-		if(mCar1Angle > mCarInitAngle + 270) mCar1Angle--;
+		if(mCar1Angle <= 0 || mCar1Angle > 270) mCar1Angle--;
 		if(steps < 49) {
 			mCar1PosX -= mCarStepsInc;
 		}
@@ -1771,14 +1774,14 @@ void car1Timer(void) {
 	
 	// lane 8, step 52 - 54, direction +z
 	if(steps >= 52 && steps < 54) {
-		if(mCar1Angle > mCarInitAngle + 270) mCar1Angle--;
+		if(mCar1Angle <= 0 || mCar1Angle > 270) mCar1Angle--;
 		mCar1PosZ += mCarStepsInc;
 		mCar1Steps += mCarStepsInc;
 	}
 	
-	// turn 8, step 54 - 56, turn right(+) from 450 to 540 (+360 degree from initAngle)
+	// turn 8, step 54 - 56, turn right(+) from 270 to 360/0
 	if(steps >= 54 && steps < 56) {
-		if(mCar1Angle < mCarInitAngle + 360) mCar1Angle++;
+		if(mCar1Angle > 0 && mCar1Angle < 360) mCar1Angle++;
 		mCar1PosX -= mCarStepsInc / 2;
 		mCar1PosZ += mCarStepsInc / 2;
 		mCar1Steps += mCarStepsInc;
