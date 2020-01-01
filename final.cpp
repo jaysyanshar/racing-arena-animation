@@ -12,11 +12,11 @@
  *
  */
 #include "JTKPOLBAN.h"
-#include "loadtexbmp.c"
-#include "fatal.c"
-#include "Errcheck.c"
-#include "print.c"
-#include "project.c"
+#include "loadtexbmp.cpp"
+#include "fatal.cpp"
+#include "Errcheck.cpp"
+#include "print.cpp"
+#include "project.cpp"
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE 0x812F
 #endif
@@ -98,6 +98,13 @@ _textureWoodBeam;
 float Ambient[]   = {0.01*80 ,0.01*80 ,0.01*80 ,1.0};
 float Diffuse[]   = {1.0,1.0,1.0,1.0};
 float Specular[]  = {0.01*0,0.01*0,0.01*0,1.0};
+
+// track and car
+float mTrackStartPosX = 12;
+float mTrackStartPosZ = 15;
+float mCar1PosX = mTrackStartPosX;
+float mCar1PosZ = mTrackStartPosZ;
+float mCar1Angle = 180;
 
 /*
  *  Draw a cube
@@ -1349,12 +1356,11 @@ static void curve(double x, double y, double z,
    glPopMatrix();
 }
 
-
 void track(void) {
 	float blockSize = 4;
-  	float xPos = 12;
+  	float xPos = mTrackStartPosX;
+	float zPos = mTrackStartPosZ;
 	float yPos = 0.1;
-	float zPos = 15;
 	float dx = 0.5 * blockSize;
 	float dy = 0.1;
 	float dz = 0.5 * blockSize;
@@ -1452,6 +1458,9 @@ void track(void) {
 	
 	// turn 8, step 51, quadran 4 (360 degree)
 	curve(xPos-(blockSize/2), yPos, zPos-(blockSize/2), dx, dy, dz, 360, radius);
+	
+	// car 1 blue
+	car(mCar1PosX, yPos, mCar1PosZ, dx, dy, dz, mCar1Angle, 0.2, 0.2, 0.7);
 }
 
 
@@ -1631,6 +1640,11 @@ void idle()
    glutPostRedisplay();
 }
 
+void timer(int miliseconds) {
+	glutPostRedisplay();
+	glutTimerFunc(5, timer, 0);
+}
+
 /*
  *  GLUT calls this routine when an arrow key is pressed
  */
@@ -1777,6 +1791,7 @@ int main(int argc,char* argv[])
    glutSpecialFunc(special);
    glutKeyboardFunc(key);
    glutIdleFunc(idle);
+   glutTimerFunc(5, timer, 0);
    //  Pass control to GLUT so it can interact with the user
    ErrCheck("init");
    glutMainLoop();
