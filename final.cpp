@@ -92,7 +92,8 @@ _textureTireTread,
 _textureWarehouseWindow,
 _textureHeadLamp,
 _textureCarbonFiber,
-_textureWoodBeam;
+_textureWoodBeam,
+_textureChecker;
 
 //Light Vecotrs
 float Ambient[]   = {0.01*80 ,0.01*80 ,0.01*80 ,1.0};
@@ -106,17 +107,33 @@ float mTrackStartPosZ = 15;
 float mCarInitAngle = 180;
 int mCarMoveDelay = 5; // miliseconds per car steps
 
-float mCar1StepsInc = 0.1;
+// blue car
+float mCar1StepsInc = 0.1000;
 float mCar1PosX = mTrackStartPosX;
 float mCar1PosZ = mTrackStartPosZ;
 float mCar1Angle = 0;
 float mCar1Steps = 0;
 
-float mCar2StepsInc = 0.1135;
+// red car
+float mCar2StepsInc = 0.1140;
 float mCar2PosX = mTrackStartPosX;
 float mCar2PosZ = mTrackStartPosZ + mTrackBlockSize;
 float mCar2Angle = 0;
 float mCar2Steps = 0;
+
+// green car
+float mCar3StepsInc = mCar1StepsInc;
+float mCar3PosX = mTrackStartPosX - (2 * mTrackBlockSize);
+float mCar3PosZ = mTrackStartPosZ;
+float mCar3Angle = 0;
+float mCar3Steps = 2 * mTrackBlockSize;
+
+// yellow car
+float mCar4StepsInc = mCar2StepsInc;
+float mCar4PosX = mTrackStartPosX - (2 * mTrackBlockSize);
+float mCar4PosZ = mTrackStartPosZ + mTrackBlockSize;
+float mCar4Angle = 0;
+float mCar4Steps = 2 * mTrackBlockSize;
 
 /*
  *  Draw a cube
@@ -1379,6 +1396,13 @@ void track(void) {
 	float radius = dx * 4 / (mTrackBlockSize/2);
 	texScale = dx;
 	
+	float carSizeX = 0.5 * mTrackBlockSize;
+	float carSizeY = 0.4 * mTrackBlockSize;
+	float carSizeZ = 0.4 * mTrackBlockSize;
+	
+	glColor3f(0.4, 0.4, 0.4);
+   	glBindTexture(GL_TEXTURE_2D,_textureAsphalt);
+	
 	// lane 1, step 0 - 12, direction -x
 	for(int i = 0; i <= 12; i++) {
 		cube(xPos, yPos, zPos, dx, dy, dz, 0);
@@ -1471,10 +1495,25 @@ void track(void) {
 	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
 	
 	// car 1 blue
-	car(mCar1PosX, carPosY, mCar1PosZ, 0.5*mTrackBlockSize, 0.4*mTrackBlockSize, 0.4*mTrackBlockSize, -(mCarInitAngle+mCar1Angle), 0.2, 0.2, 0.7);
+	car(mCar1PosX, carPosY, mCar1PosZ, carSizeX, carSizeY, carSizeZ, -(mCarInitAngle+mCar1Angle), 0.2, 0.2, 0.7);
 	
 	// car 2 red
-	car(mCar2PosX, carPosY, mCar2PosZ, 0.5*mTrackBlockSize, 0.4*mTrackBlockSize, 0.4*mTrackBlockSize, -(mCarInitAngle+mCar2Angle), 0.7, 0.2, 0.2);
+	car(mCar2PosX, carPosY, mCar2PosZ, carSizeX, carSizeY, carSizeZ, -(mCarInitAngle+mCar2Angle), 0.7, 0.2, 0.2);
+	
+	// car 3 green
+	car(mCar3PosX, carPosY, mCar3PosZ, carSizeX, carSizeY, carSizeZ, -(mCarInitAngle+mCar3Angle), 0.2, 0.7, 0.2);
+	
+	// car 4 yellow
+	car(mCar4PosX, carPosY, mCar4PosZ, carSizeX, carSizeY, carSizeZ, -(mCarInitAngle+mCar4Angle), 0.7, 0.7, 0.2);
+	
+	// first person cam on car 1 blue
+	if(!mode) {
+		fpX = mCar1PosX;
+		fpY = carPosY + mTrackBlockSize;
+		fpZ = mCar1PosZ;
+		th = (mCarInitAngle+mCar1Angle) + 90;
+		ph = -15;
+	}
 }
 
 void grass(void) {
@@ -1496,6 +1535,31 @@ void grass(void) {
 	}
 }
 
+void startRaceLine(void) {
+	float xPos = mTrackStartPosX - (5 * mTrackBlockSize);
+	float yPos = 0.11;
+	float zPos = mTrackStartPosZ;
+	float dx = 0.25 * mTrackBlockSize;
+	float dy = 0.1;
+	float dz = 0.5 * mTrackBlockSize;
+	texScale = dx;
+	
+	glColor3f(0.7, 0.7, 0.7);
+	glBindTexture(GL_TEXTURE_2D, _textureChecker);
+	
+	// race line
+	cube(xPos, yPos, zPos, dx, dy, dz, 0);
+	cube(xPos, yPos, zPos + mTrackBlockSize, dx, dy, dz, 0);
+	
+	// race line flag
+	cube(xPos, (yPos-mTrackBlockSize/4) + mTrackBlockSize * 2, zPos + mTrackBlockSize / 2, 0.1, 0.2 * mTrackBlockSize, mTrackBlockSize, 0);
+	
+	// race line gate
+	glColor3f(0.7, 0.5, 0.7);
+	glBindTexture(GL_TEXTURE_2D, _textureWoodBeam);
+	cube(xPos, yPos + mTrackBlockSize, zPos - mTrackBlockSize / 1.75, 0.05 * mTrackBlockSize, mTrackBlockSize, 0.05 * mTrackBlockSize, 0);
+	cube(xPos, yPos + mTrackBlockSize, zPos + mTrackBlockSize + mTrackBlockSize / 1.75, 0.05 * mTrackBlockSize, mTrackBlockSize, 0.05 * mTrackBlockSize, 0);
+}
 
 /*
  *  OpenGL (GLUT) calls this routine to display the scene
@@ -1587,15 +1651,18 @@ void display()
    glEnable(GL_POLYGON_OFFSET_FILL);
 
 
-//  . Street surface 
-   glColor3f(0.4, 0.4, 0.4);
-   glBindTexture(GL_TEXTURE_2D,_textureAsphalt);
-//   texScale = 0.5;
+	// Track
    track();
    
+   // Start Line
+   startRaceLine();
+   
+   // Grass
    glColor3f(0.4, 0.6, 0.2);
    glBindTexture(GL_TEXTURE_2D, _textureGrass);
    grass();
+   
+   // Building
 
 // //  Street Surface - Side Streets
 //   glColor3f(0.4, 0.4, 0.4);
@@ -1827,6 +1894,158 @@ void car1Timer(void) {
 	}
 }
 
+void car3Timer(void) {
+	
+	float steps = mCar3Steps / mTrackBlockSize;
+	
+	if(mCar3Angle > 359) mCar3Angle = 0;
+	else if(mCar3Angle < 0) mCar3Angle = 359;
+	
+	// lane 1, step 0 - 12, direction -x
+	if(steps >= 0 && steps < 12) {
+		if(mCar3Angle > 0 && mCar3Angle < 360) mCar3Angle++;
+		mCar3PosX -= mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 1, step 12 - 14, turn right(+), from 0 to 90
+	if(steps >= 12 && steps < 14) {
+		if(mCar3Angle < 90) mCar3Angle++;
+		mCar3PosX -= mCar3StepsInc / 2;
+		mCar3PosZ -= mCar3StepsInc / 2;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// lane 2, step 14 - 16, direction -z
+	if(steps >= 14 && steps < 16) {
+		if(mCar3Angle < 90) mCar3Angle++;
+		mCar3PosZ -= mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 2, step 16 - 18, turn right(+), from 90 to 180
+	if(steps >= 16 && steps < 18) {
+		if(mCar3Angle < 180) mCar3Angle++;
+		mCar3PosX += mCar3StepsInc / 2;
+		mCar3PosZ -= mCar3StepsInc / 2;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// lane 3, step 18 - 20, direction +x
+	if(steps >= 18 && steps < 20) {
+		if(mCar3Angle < 180) mCar3Angle++;
+		mCar3PosX += mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 3, step 20 - 24, turn left(-), from 180 to 90
+	if(steps >= 20 && steps < 24) {
+		if(mCar3Angle > 90) mCar3Angle--;
+		if(steps < 21) {
+			mCar3PosX += mCar3StepsInc;
+		}
+		else if(steps >= 21 && steps < 23) {
+			mCar3PosX += mCar3StepsInc / 2;
+			mCar3PosZ -= mCar3StepsInc / 2;
+		}
+		else if(steps >= 23) {
+			mCar3PosZ -= mCar3StepsInc;
+		}
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// lane 4, step 24 - 26, direction -z
+	if(steps >= 24 && steps < 26) {
+		if(mCar3Angle > 90) mCar3Angle--;
+		mCar3PosZ -= mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 4, step 26 - 28, turn right(+), from 90 to 180
+	if(steps >= 26 && steps < 28) {
+		if(mCar3Angle < 180) mCar3Angle++;
+		mCar3PosX += mCar3StepsInc / 2;
+		mCar3PosZ -= mCar3StepsInc / 2;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// lane 5, step 28 - 40, direction +x
+	if(steps >= 28 && steps < 40) {
+		if(mCar3Angle < 180) mCar3Angle++;
+		mCar3PosX += mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 5, step 40 - 42, turn right(+), from 180 to 270
+	if(steps >= 40 && steps < 42) {
+		if(mCar3Angle < 270) mCar3Angle++;
+		mCar3PosX += mCar3StepsInc / 2;
+		mCar3PosZ += mCar3StepsInc / 2;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// lane 6, step 42 - 44, direction +z
+	if(steps >= 42 && steps < 44) {
+		if(mCar3Angle < 270) mCar3Angle++;
+		mCar3PosZ += mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 6, step 44 - 46, turn right(+), 270 to 360/0
+	if(steps >= 44 && steps < 46) {
+		if(mCar3Angle > 0 && mCar3Angle < 360) mCar3Angle++;
+		mCar3PosX -= mCar3StepsInc / 2;
+		mCar3PosZ += mCar3StepsInc / 2;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// lane 7, step 46 - 48, direction -x
+	if(steps >= 46 && steps < 48) {
+		if(mCar3Angle > 0 && mCar3Angle < 360) mCar3Angle++;
+		mCar3PosX -= mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 7, step 48 - 52, turn left(-), from 0 to 270
+	if(steps >= 48 && steps < 52) {
+		if(mCar3Angle <= 0 || mCar3Angle > 270) mCar3Angle--;
+		if(steps < 49) {
+			mCar3PosX -= mCar3StepsInc;
+		}
+		else if(steps >= 49 && steps < 51) {
+			mCar3PosX -= mCar3StepsInc / 2;
+			mCar3PosZ += mCar3StepsInc / 2;
+		}
+		else if(steps >= 51) {
+			mCar3PosZ += mCar3StepsInc;
+		}
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// lane 8, step 52 - 54, direction +z
+	if(steps >= 52 && steps < 54) {
+		if(mCar3Angle <= 0 || mCar3Angle > 270) mCar3Angle--;
+		mCar3PosZ += mCar3StepsInc;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// turn 8, step 54 - 56, turn right(+) from 270 to 360/0
+	if(steps >= 54 && steps < 56) {
+		if(mCar3Angle > 0 && mCar3Angle < 360) mCar3Angle++;
+		mCar3PosX -= mCar3StepsInc / 2;
+		mCar3PosZ += mCar3StepsInc / 2;
+		mCar3Steps += mCar3StepsInc;
+	}
+	
+	// reset for loop
+	if(steps >= 56) {
+		mCar3PosX = mTrackStartPosX;
+		mCar3PosZ = mTrackStartPosZ;
+		mCar3Angle = 0;
+		mCar3Steps = 0;
+	}
+}
+
 void car2Timer(void) {
 	
 	float steps = mCar2Steps / mTrackBlockSize;
@@ -2012,10 +2231,197 @@ void car2Timer(void) {
 	}
 }
 
+void car4Timer(void) {
+	
+	float steps = mCar4Steps / mTrackBlockSize;
+	
+	if(mCar4Angle > 359) mCar4Angle = 0;
+	else if(mCar4Angle < 0) mCar4Angle = 359;
+	
+	// lane 1, step 0 - 12, direction -x
+	if(steps >= 0 && steps < 12) {
+		if(mCar4Angle > 0 && mCar4Angle < 360) mCar4Angle++;
+		mCar4PosX -= mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 1, step 12 - 16, turn right(+), from 0 to 90
+	if(steps >= 12 && steps < 16) {
+		if(mCar4Angle < 90) mCar4Angle++;
+		if(steps < 13) {
+			mCar4PosX -= mCar4StepsInc;
+		}
+		else if(steps >= 13 && steps < 15) {
+			mCar4PosX -= mCar4StepsInc / 2;
+			mCar4PosZ -= mCar4StepsInc / 2;
+		}
+		else if(steps >= 15) {
+			mCar4PosZ -= mCar4StepsInc;
+		}
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// lane 2, step 16 - 18, direction -z
+	if(steps >= 16 && steps < 18) {
+		if(mCar4Angle < 90) mCar4Angle++;
+		mCar4PosZ -= mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 2, step 18 - 22, turn right(+), from 90 to 180
+	if(steps >= 18 && steps < 22) {
+		if(mCar4Angle < 180) mCar4Angle++;
+		if(steps < 19) {
+			mCar4PosZ -= mCar4StepsInc;
+		}
+		else if(steps >= 19 && steps < 21) {
+			mCar4PosX += mCar4StepsInc / 2;
+			mCar4PosZ -= mCar4StepsInc / 2;
+		}
+		else if(steps >= 21) {
+			mCar4PosX += mCar4StepsInc;
+		}
+		
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// lane 3, step 22 - 24, direction +x
+	if(steps >= 22 && steps < 24) {
+		if(mCar4Angle < 180) mCar4Angle++;
+		mCar4PosX += mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 3, step 24 - 26, turn left(-), from 180 to 90
+	if(steps >= 24 && steps < 26) {
+		if(mCar4Angle > 90) mCar4Angle--;
+		mCar4PosX += mCar4StepsInc / 2;
+		mCar4PosZ -= mCar4StepsInc / 2;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// lane 4, step 26 - 28, direction -z
+	if(steps >= 26 && steps < 28) {
+		if(mCar4Angle > 90) mCar4Angle--;
+		mCar4PosZ -= mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 4, step 28 - 32, turn right(+), from 90 to 180
+	if(steps >= 28 && steps < 32) {
+		if(mCar4Angle < 180) mCar4Angle++;
+		if(steps < 29) {
+			mCar4PosZ -= mCar4StepsInc;
+		}
+		else if(steps >= 29 && steps < 31) {
+			mCar4PosX += mCar4StepsInc / 2;
+			mCar4PosZ -= mCar4StepsInc / 2;
+		}
+		else if(steps >= 31) {
+			mCar4PosX += mCar4StepsInc;
+		}
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// lane 5, step 32 - 44, direction +x
+	if(steps >= 32 && steps < 44) {
+		if(mCar4Angle < 180) mCar4Angle++;
+		mCar4PosX += mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 5, step 44 - 48, turn right(+), from 180 to 270
+	if(steps >= 44 && steps < 48) {
+		if(mCar4Angle < 270) mCar4Angle++;
+		if(steps < 45) {
+			mCar4PosX += mCar4StepsInc;
+		}
+		else if(steps >= 45 && steps < 47) {
+			mCar4PosX += mCar4StepsInc / 2;
+			mCar4PosZ += mCar4StepsInc / 2;
+		}
+		else if(steps >= 47) {
+			mCar4PosZ += mCar4StepsInc;
+		}
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// lane 6, step 48 - 50, direction +z
+	if(steps >= 48 && steps < 50) {
+		if(mCar4Angle < 270) mCar4Angle++;
+		mCar4PosZ += mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 6, step 50 - 54, turn right(+), 270 to 360/0
+	if(steps >= 50 && steps < 54) {
+		if(mCar4Angle > 0 && mCar4Angle < 360) mCar4Angle++;
+		if(steps < 51) {
+			mCar4PosZ += mCar4StepsInc;
+		}
+		else if(steps >= 51 && steps < 53) {
+			mCar4PosX -= mCar4StepsInc / 2;
+			mCar4PosZ += mCar4StepsInc / 2;
+		}
+		else if(steps >= 53) {
+			mCar4PosX -= mCar4StepsInc;
+		}
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// lane 7, step 54 - 56, direction -x
+	if(steps >= 54 && steps < 56) {
+		if(mCar4Angle > 0 && mCar4Angle < 360) mCar4Angle++;
+		mCar4PosX -= mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 7, step 56 - 58, turn left(-), from 0 to 270
+	if(steps >= 56 && steps < 58) {
+		if(mCar4Angle <= 0 || mCar4Angle > 270) mCar4Angle--;
+		mCar4PosX -= mCar4StepsInc / 2;
+		mCar4PosZ += mCar4StepsInc / 2;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// lane 8, step 58 - 60, direction +z
+	if(steps >= 58 && steps < 60) {
+		if(mCar4Angle <= 0 || mCar4Angle > 270) mCar4Angle--;
+		mCar4PosZ += mCar4StepsInc;
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// turn 8, step 60 - 64, turn right(+) from 270 to 360/0
+	if(steps >= 60 && steps < 64) {
+		if(mCar4Angle > 0 && mCar4Angle < 360) mCar4Angle++;
+		if(steps < 61) {
+			mCar4PosZ += mCar4StepsInc;
+		}
+		else if(steps >= 61 && steps < 63) {
+			mCar4PosX -= mCar4StepsInc / 2;
+			mCar4PosZ += mCar4StepsInc / 2;
+		}
+		else if(steps >= 63) {
+			mCar4PosX -= mCar4StepsInc;
+		}
+		mCar4Steps += mCar4StepsInc;
+	}
+	
+	// reset for loop
+	if(steps >= 64) {
+		mCar4PosX = mTrackStartPosX;
+		mCar4PosZ = mTrackStartPosZ + mTrackBlockSize;
+		mCar4Angle = 0;
+		mCar4Steps = 0;
+	}
+}
+
 void timer(int miliseconds) {
 	
 	car1Timer();
 	car2Timer();
+	car3Timer();
+	car4Timer();
 	
 	glutPostRedisplay();
 	glutTimerFunc(mCarMoveDelay, timer, 0);
@@ -2148,6 +2554,7 @@ void init(){
 	_textureHeadLamp = LoadTexBMP("headlamp.bmp");
 	_textureCarbonFiber = LoadTexBMP("carbon-fiber.bmp");
 	_textureWoodBeam = LoadTexBMP("wood-beam.bmp");
+	_textureChecker = LoadTexBMP("checker.bmp");
 }
 /*
  *  Start up GLUT and tell it what to do
