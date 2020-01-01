@@ -28,7 +28,7 @@ int ph=35;         //  Elevation of view angle
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
 double asp=1.333;  //  Aspect ratio
-double dim=8.0;   //  Size of world
+double dim=50.0;   //  Size of world
 
 // Light values
 int one       =   1;  // Unit value
@@ -1351,110 +1351,150 @@ static void curve(double x, double y, double z,
 
 
 void track(void) {
-	float sizeBlock = 2;
-  	float xPos = -9.0;
+	float blockSize = 4;
+  	float xPos = 12.5;
 	float yPos = 0.1;
-	float zPos = -5.0;
-	float dx = 0.5 * sizeBlock;
+	float zPos = 12.5;
+	float dx = 0.5 * blockSize;
 	float dy = 0.1;
-	float dz = 0.5 * sizeBlock;
-	float radius = dx * 4 / sizeBlock;
+	float dz = 0.5 * blockSize;
+	float radius = dx * 4 / (blockSize);
 	texScale = dx;
- 	int i;
+	int i;
 	
-	// Street 1
-	for(i = 0; i < 6; i++){
+	// lane 1, step 0 - 12, -x
+	for(i = 0; i <= 12; i++) {
 		cube(xPos, yPos, zPos, dx, dy, dz, 0);
-		xPos += sizeBlock;
+//		cube(xPos, yPos, zPos+blockSize, dx, dy, dz, 0);
+		xPos -= blockSize;
 	}
-      
-   //belok 1
-   curve(xPos-(sizeBlock/2),yPos,zPos-(sizeBlock/2),dx,dy,dz,0,radius);
-   
-   	printf("\n\njalan 2\n\n");
-   printf("xPOS : %2f\t",xPos); 
-   printf("yPOS : %2f\n\n",yPos);
-   printf("ZPOS : %2f\n\n",zPos);
-   //street 2
-   zPos -= sizeBlock;
-    for(i = 0; i < 2; i++){
-      cube(xPos,yPos,zPos, dx,dy,dz,90);
-      zPos -= sizeBlock;
-   }
-      //belok 2
-   curve(xPos-(sizeBlock/2),yPos,zPos+(sizeBlock/2),dx,dy,dz,90,radius);
-   
-   	printf("\n\njalan 3\n\n");
-   printf("xPOS : %2f\t",xPos); 
-   printf("yPOS : %2f\n\n",yPos);
-   printf("ZPOS : %2f\n\n",zPos);
-      //street 3
-   xPos -= sizeBlock;
-    for(i = 0; i < 4; i++){
-      cube(xPos,yPos,zPos, dx,dy,dz,0);
-      xPos -= sizeBlock;
-   }
-      //belok 3
-   curve(xPos+(sizeBlock/2),yPos,zPos-(sizeBlock/2),dx,dy,dz,270,radius);
-   
-   	printf("\n\njalan 4\n\n");
-   printf("xPOS : %2f\t",xPos); 
-   printf("yPOS : %2f\n\n",yPos);
-   printf("ZPOS : %2f\n\n",zPos);
-      //street 4
-   zPos -= sizeBlock;
-    for(i = 0; i < 2; i++){
-      cube(xPos,yPos,zPos, dx,dy,dz,90);
-      zPos -= sizeBlock;
-   }
-   
-   //belok 4
-   curve(xPos+(sizeBlock/2),yPos,zPos+(sizeBlock/2),dx,dy,dz,180,radius);
-   
-   	printf("\n\njalan 5\n\n");
-   printf("xPOS : %2f\t",xPos); 
-   printf("yPOS : %2f\n\n",yPos);
-   printf("ZPOS : %2f\n\n",zPos);
-      //street 5
-   xPos += sizeBlock;
-    for(i = 0; i < 4; i++){
-      cube(xPos,yPos,zPos, dx,dy,dz,0);
-      xPos += sizeBlock;
-   }
-   //belok 5
-   curve(xPos-(sizeBlock/2),yPos,zPos-(sizeBlock/2),dx,dy,dz,360,radius);
-   
-   
-   	printf("\n\njalan 6\n\n");
-   printf("xPOS : %2f\t",xPos); 
-   printf("yPOS : %2f\n\n",yPos);
-   printf("ZPOS : %2f\n\n",zPos);
-         //street 6
-   zPos -= sizeBlock;
-    for(i = 0; i < 2; i++){
-      cube(xPos,yPos,zPos, dx,dy,dz,90);
-      zPos -= sizeBlock;
-   }
-   
-   //belok 6
-   curve(xPos-(sizeBlock/2),yPos,zPos+(sizeBlock/2),dx,dy,dz,90,radius);
-   
-          //street 7
-   xPos -= sizeBlock;
-    for(i = 0; i < 6; i++){
-      cube(xPos,yPos,zPos, dx,dy,dz,0);
-      xPos -= sizeBlock;
-   }
-   //belok 7
-   curve(xPos+(sizeBlock/2),yPos,zPos+(sizeBlock/2),dx,dy,dz,180,radius);
-   //street 8
-   zPos += sizeBlock;
-    for(i = 0; i < 8; i++){
-      cube(xPos,yPos,zPos, dx,dy,dz,90);
-      zPos += sizeBlock;
-   }
-   //belok 8
-   curve(xPos+(sizeBlock/2),yPos,zPos-(sizeBlock/2),dx,dy,dz,270,radius);
+	
+	// turn 1, step 13, -x, quadran 3 (270 degree)
+	curve(xPos+(blockSize/2), yPos, zPos-(blockSize/2), dx, dy, dz, 270, radius);
+
+	// lane 2, step 14 - 16, -z
+	zPos -= blockSize;
+	for(i = 14; i <= 16; i++) {
+		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+		zPos -= blockSize;
+	}
+	
+	// turn 2, step 17, quadran 2 (180 degree)
+	curve(xPos+(blockSize/2), yPos, zPos+(blockSize/2), dx, dy, dz, 180, radius);
+	
+	// lane 3, step 18 - 20, +x
+	xPos += blockSize;
+	for(i = 18; i <= 20; i++) {
+		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+		xPos += blockSize;
+	}
+	
+	// turn 3, step 21, quadran 4 (360 degree)
+	curve(xPos-(blockSize/2), yPos, zPos-(blockSize/2), dx, dy, dz, 360, radius);
+	
+	// lane 4, step 22 - 24, -z
+	zPos -= blockSize;
+	for(i = 22; i <= 24; i++) {
+		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+		zPos -= blockSize;
+	}
+	
+	// turn 4, step 25, quadran 2 (180 degree)
+	curve(xPos+(blockSize/2), yPos, zPos+(blockSize/2), dx, dy, dz, 180, radius);
+	
+//	// Street 1
+//	for(i = 0; i < 6; i++){
+//		cube(xPos, yPos, zPos, dx, dy, dz, 0);
+//		xPos += blockSize;
+//	}
+//      
+//   //belok 1
+//   curve(xPos-(blockSize/2),yPos,zPos-(blockSize/2),dx,dy,dz,0,radius);
+//   
+//   	printf("\n\njalan 2\n\n");
+//   printf("xPOS : %2f\t",xPos); 
+//   printf("yPOS : %2f\n\n",yPos);
+//   printf("ZPOS : %2f\n\n",zPos);
+//   //street 2
+//   zPos -= blockSize;
+//    for(i = 0; i < 2; i++){
+//      cube(xPos,yPos,zPos, dx,dy,dz,90);
+//      zPos -= blockSize;
+//   }
+//      //belok 2
+//   curve(xPos-(blockSize/2),yPos,zPos+(blockSize/2),dx,dy,dz,90,radius);
+//   
+//   	printf("\n\njalan 3\n\n");
+//   printf("xPOS : %2f\t",xPos); 
+//   printf("yPOS : %2f\n\n",yPos);
+//   printf("ZPOS : %2f\n\n",zPos);
+//      //street 3
+//   xPos -= blockSize;
+//    for(i = 0; i < 4; i++){
+//      cube(xPos,yPos,zPos, dx,dy,dz,0);
+//      xPos -= blockSize;
+//   }
+//      //belok 3
+//   curve(xPos+(blockSize/2),yPos,zPos-(blockSize/2),dx,dy,dz,270,radius);
+//   
+//   	printf("\n\njalan 4\n\n");
+//   printf("xPOS : %2f\t",xPos); 
+//   printf("yPOS : %2f\n\n",yPos);
+//   printf("ZPOS : %2f\n\n",zPos);
+//      //street 4
+//   zPos -= blockSize;
+//    for(i = 0; i < 2; i++){
+//      cube(xPos,yPos,zPos, dx,dy,dz,90);
+//      zPos -= blockSize;
+//   }
+//   
+//   //belok 4
+//   curve(xPos+(blockSize/2),yPos,zPos+(blockSize/2),dx,dy,dz,180,radius);
+//   
+//   	printf("\n\njalan 5\n\n");
+//   printf("xPOS : %2f\t",xPos); 
+//   printf("yPOS : %2f\n\n",yPos);
+//   printf("ZPOS : %2f\n\n",zPos);
+//      //street 5
+//   xPos += blockSize;
+//    for(i = 0; i < 4; i++){
+//      cube(xPos,yPos,zPos, dx,dy,dz,0);
+//      xPos += blockSize;
+//   }
+//   //belok 5
+//   curve(xPos-(blockSize/2),yPos,zPos-(blockSize/2),dx,dy,dz,360,radius);
+//   
+//   
+//   	printf("\n\njalan 6\n\n");
+//   printf("xPOS : %2f\t",xPos); 
+//   printf("yPOS : %2f\n\n",yPos);
+//   printf("ZPOS : %2f\n\n",zPos);
+//         //street 6
+//   zPos -= blockSize;
+//    for(i = 0; i < 2; i++){
+//      cube(xPos,yPos,zPos, dx,dy,dz,90);
+//      zPos -= blockSize;
+//   }
+//   
+//   //belok 6
+//   curve(xPos-(blockSize/2),yPos,zPos+(blockSize/2),dx,dy,dz,90,radius);
+//   
+//          //street 7
+//   xPos -= blockSize;
+//    for(i = 0; i < 6; i++){
+//      cube(xPos,yPos,zPos, dx,dy,dz,0);
+//      xPos -= blockSize;
+//   }
+//   //belok 7
+//   curve(xPos+(blockSize/2),yPos,zPos+(blockSize/2),dx,dy,dz,180,radius);
+//   //street 8
+//   zPos += blockSize;
+//    for(i = 0; i < 8; i++){
+//      cube(xPos,yPos,zPos, dx,dy,dz,90);
+//      zPos += blockSize;
+//   }
+//   //belok 8
+//   curve(xPos+(blockSize/2),yPos,zPos-(blockSize/2),dx,dy,dz,270,radius);
 }
 
 
@@ -1534,7 +1574,7 @@ void display()
    //Draw scene
 
    //Skybox
-   skybox(64);
+   skybox(128);
 
    //  Set specular color to white
    float white[] = {1,1,1,1};
@@ -1553,6 +1593,7 @@ void display()
    glBindTexture(GL_TEXTURE_2D,_textureAsphalt);
 //   texScale = 0.5;   
    
+   // track
    track();
 
 // //  Street Surface - Side Streets
