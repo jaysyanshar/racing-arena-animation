@@ -1775,15 +1775,15 @@ void grandStand(void) {
 	texScale = 0.5 * mTrackBlockSize;
 	
 	float xLength = 12 * mTrackBlockSize;
-	float yHeight = 3 * dy;
-	float zWidth = 3 * dz;
+	float yHeight = 2 * dy;
+	float zWidth = 2 * dz;
 	
 	glColor3f(1, 1, 1);
-	glBindTexture(GL_TEXTURE_2D, _textureCinderBlock);
+	glBindTexture(GL_TEXTURE_2D, _textureGreyBrick);
 	
 	// lower wall
-	for(int z = zPos; z < zPos + zWidth; z += dz) {
-		for(int y = yPos; y < yPos + yHeight; y += dy) {
+	for(float z = zPos; z < zPos + zWidth; z += dz) {
+		for(float y = yPos; y < yPos + yHeight; y += dy) {
 			// left
 			cube(xPos - xLength, y, z, dx, dy, dz, 0);
 			
@@ -1792,11 +1792,11 @@ void grandStand(void) {
 		}
 	}
 	
-	yHeight = 6 * dy;
+	yHeight = 4 * dy;
 	
 	// higher wall
-	for(int z = zPos + zWidth; z < zPos + 1.5 * zWidth; z += dz) {
-		for(int y = yPos; y < yPos + yHeight; y += dy) {
+	for(float z = zPos + zWidth; z < zPos + 2 * zWidth; z += dz) {
+		for(float y = yPos; y < yPos + yHeight; y += dy) {
 			// left
 			cube(xPos - xLength, y, z, dx, dy, dz, 0);
 			
@@ -1805,9 +1805,14 @@ void grandStand(void) {
 		}
 	}
 	
+	float temp = dx;
+	dx = dz;
+	dz = temp;
+	
 	// back wall
-	for(int x = xPos; x > xPos - xLength; x -= dx) {
-		for(int y = yPos; y < yPos + yHeight; y += dy) {
+	for(float x = xPos; x > xPos - xLength; x -= dx) {
+		if(x < xPos)
+		for(float y = yPos; y < yPos + yHeight; y += dy) {
 			cube(x, y, zPos + 2 * zWidth, dx, dy, dz, 0);
 		}
 	}
@@ -1820,12 +1825,12 @@ void grandStand(void) {
 	dy = 0.1;
 	dz = 0.5 * mTrackBlockSize;
 	
-	zWidth = 6 * dz;
+	zWidth = 5 * dz;
 	
 	// floor
-	for(int x = xPos; x > xPos - xLength; x -= dx) {
+	for(float x = xPos; x > xPos - xLength; x -= dx) {
 		if(x < xPos)
-		for(int z = zPos; z < zPos + zWidth; z += dz) {
+		for(float z = zPos; z < zPos + zWidth; z += dz) {
 			if(z < zPos + zWidth - dz)
 			cube(x, yPos, z, dx, dy, dz, 0);
 		} 
