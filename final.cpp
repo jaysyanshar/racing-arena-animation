@@ -1466,7 +1466,7 @@ void trackFence(void) {
 	float fenceWidth = 0.5 * mTrackBlockSize;
 	float dy = 0.5 * fenceWidth;
 //	float radius = dx * 4 / (mTrackBlockSize/2);
-	float fenceLoc = 0.75 * mTrackBlockSize;
+	float fencePos = 0.5 * mTrackBlockSize;
 	float texScaleX = fenceWidth;
 	float texScaleY = 0.5 * fenceWidth;
 	
@@ -1476,9 +1476,9 @@ void trackFence(void) {
 	// lane 1, step 0 - 12, direction -x
 	for(int i = 0; i <= 12; i++) {
 		if(i > 0 && i < 12) {
-			block(xPos, yPos, zPos-fenceLoc, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+			block(xPos, yPos, zPos-fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
 		}
-		block(xPos, yPos, zPos+mTrackBlockSize+fenceLoc, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		block(xPos, yPos, zPos+mTrackBlockSize+fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
 		xPos -= mTrackBlockSize;
 	}
 	
@@ -1489,81 +1489,101 @@ void trackFence(void) {
 	zPos -= mTrackBlockSize;
 	for(int i = 14; i <= 16; i++) {
 		if(i > 14 && i < 16) {
-			block(xPos+fenceLoc, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+			block(xPos+fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
 		}
-		block(xPos-mTrackBlockSize-fenceLoc, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		block(xPos-mTrackBlockSize-fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
 		zPos -= mTrackBlockSize;
 	}
+	
+	// turn 2, step 17, quadran 2 (180 degree)
+//	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
+	
+	// lane 3, step 18 - 20, direction +x
+	xPos += mTrackBlockSize;
+	for(int i = 18; i <= 20; i++) {
+		if(i > 18 && i <= 20) {
+			block(xPos, yPos, zPos+fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		}
+		if(i >= 18 && i < 20) {
+			block(xPos, yPos, zPos-mTrackBlockSize-fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		}
+		xPos += mTrackBlockSize;
+	}
+	
+	// turn 3, step 21, quadran 4 (360 degree)
+	zPos -= mTrackBlockSize;
+//	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
+	xPos += mTrackBlockSize;
+	
+	// lane 4, step 22 - 24, direction -z
+	zPos -= mTrackBlockSize;
+	for(int i = 22; i <= 24; i++) {
+		if(i >= 22 && i < 24) {
+			block(xPos+fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);	
+		}
+		if(i > 22 && i <= 24) {
+			block(xPos-mTrackBlockSize-fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		}
+		zPos -= mTrackBlockSize;
+	}
+	
+	// turn 4, step 25, quadran 2 (180 degree)
+//	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
+	
+	// lane 5, step 26 - 38, direction +x
+	xPos += mTrackBlockSize;
+	for(int i = 26; i <= 38; i++) {
+		if(i > 26 && i < 38) {
+			block(xPos, yPos, zPos+fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		}
+		block(xPos, yPos, zPos-mTrackBlockSize-fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		xPos += mTrackBlockSize;
+	}
+	
+	// turn 5, step 39, quadran 1 (90 degree)
+//	curve(xPos-(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 90, radius);
+	
+	// lane 6, step 40 - 42, direction +z
+	zPos += mTrackBlockSize;
+	for(int i = 40; i <= 42; i++) {
+		if(i > 40 && i < 42) {
+			block(xPos-fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		}
+		block(xPos+mTrackBlockSize+fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		zPos += mTrackBlockSize;
+	}
+	
+	// turn 6, step 43, quadran 4 (360 degree)
+//	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
+	
+	// lane 7, step 44 - 46, direction -x
+	xPos -= mTrackBlockSize;
+	for(int i = 44; i <= 46; i++) {
+		if(i > 44 && i <= 46) {
+			block(xPos, yPos, zPos-fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		}
+		if(i >= 44 && i < 46) {
+			block(xPos, yPos, zPos+mTrackBlockSize+fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		}
+		xPos -= mTrackBlockSize;
+	}
+	
+	// turn 7, step 47, quadran 2 (180 degree)
+	zPos += mTrackBlockSize;
+//	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
+	xPos -= mTrackBlockSize;
 //	
-//	// turn 2, step 17, quadran 2 (180 degree)
-////	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
-//	
-//	// lane 3, step 18 - 20, direction +x
-//	xPos += mTrackBlockSize;
-//	for(int i = 18; i <= 20; i++) {
-//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		block(xPos, yPos, zPos-mTrackBlockSize, dx, dy, dz, 0, texScaleX, texScaleY);
-//		xPos += mTrackBlockSize;
-//	}
-//	
-//	// turn 3, step 21, quadran 4 (360 degree)
-//	zPos -= mTrackBlockSize;
-////	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
-//	xPos += mTrackBlockSize;
-//	
-//	// lane 4, step 22 - 24, direction -z
-//	zPos -= mTrackBlockSize;
-//	for(int i = 22; i <= 24; i++) {
-//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		block(xPos-mTrackBlockSize, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		zPos -= mTrackBlockSize;
-//	}
-//	
-//	// turn 4, step 25, quadran 2 (180 degree)
-////	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
-//	
-//	// lane 5, step 26 - 38, direction +x
-//	xPos += mTrackBlockSize;
-//	for(int i = 26; i <= 38; i++) {
-//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		block(xPos, yPos, zPos-mTrackBlockSize, dx, dy, dz, 0, texScaleX, texScaleY);
-//		xPos += mTrackBlockSize;
-//	}
-//	
-//	// turn 5, step 39, quadran 1 (90 degree)
-////	curve(xPos-(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 90, radius);
-//	
-//	// lane 6, step 40 - 42, direction +z
-//	zPos += mTrackBlockSize;
-//	for(int i = 40; i <= 42; i++) {
-//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		block(xPos+mTrackBlockSize, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		zPos += mTrackBlockSize;
-//	}
-//	
-//	// turn 6, step 43, quadran 4 (360 degree)
-////	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
-//	
-//	// lane 7, step 44 - 46, direction -x
-//	xPos -= mTrackBlockSize;
-//	for(int i = 44; i <= 46; i++) {
-//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		block(xPos, yPos, zPos+mTrackBlockSize, dx, dy, dz, 0, texScaleX, texScaleY);
-//		xPos -= mTrackBlockSize;
-//	}
-//	
-//	// turn 7, step 47, quadran 2 (180 degree)
-//	zPos += mTrackBlockSize;
-////	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
-//	xPos -= mTrackBlockSize;
-//	
-//	// lane 8, step 48 - 50, direction +z
-//	zPos += mTrackBlockSize;
-//	for(int i = 48; i <= 50; i++) {
-//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		block(xPos+mTrackBlockSize, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
-//		zPos += mTrackBlockSize;
-//	}
+	// lane 8, step 48 - 50, direction +z
+	zPos += mTrackBlockSize;
+	for(int i = 48; i <= 50; i++) {
+		if(i >= 48 && i < 50) {
+			block(xPos-fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		}
+		if(i > 48 && i <= 50) {
+			block(xPos+mTrackBlockSize+fencePos, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		}
+		zPos += mTrackBlockSize;
+	}
 }
 
 void track(void) {
