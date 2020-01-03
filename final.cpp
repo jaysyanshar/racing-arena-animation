@@ -1726,6 +1726,9 @@ void grass(void) {
 	float dz = 0.5 * mTrackBlockSize;
 	texScale = dx;
 	
+	glColor3f(0.4, 0.6, 0.2);
+   glBindTexture(GL_TEXTURE_2D, _textureGrass);
+	
 	for(int i = 0; i < 30; i++) {
 		float zTemp = zPos;
 		for(int j = 0; j < 20; j++) {
@@ -1763,19 +1766,76 @@ void startRaceLine(void) {
 }
 
 void grandStand(void) {
-	float xPos = mTrackStartPosX - (5 * mTrackBlockSize);
-	float yPos = 0.11;
-	float zPos = mTrackStartPosZ;
-	float dx = 0.25 * mTrackBlockSize;
-	float dy = 0.1;
+	float xPos = mTrackStartPosX;
+	float yPos = 0.25 * mTrackBlockSize;
+	float zPos = mTrackStartPosZ + 2.5 * mTrackBlockSize;
+	float dx = 0.05 * mTrackBlockSize;
+	float dy = 0.25 * mTrackBlockSize;
 	float dz = 0.5 * mTrackBlockSize;
-	texScale = dx;
+	texScale = 0.5 * mTrackBlockSize;
+	
+	float xLength = 12 * mTrackBlockSize;
+	float yHeight = 3 * dy;
+	float zWidth = 3 * dz;
+	
+	glColor3f(1, 1, 1);
+	glBindTexture(GL_TEXTURE_2D, _textureCinderBlock);
+	
+	// lower wall
+	for(int z = zPos; z < zPos + zWidth; z += dz) {
+		for(int y = yPos; y < yPos + yHeight; y += dy) {
+			// left
+			cube(xPos - xLength, y, z, dx, dy, dz, 0);
+			
+			// right
+			cube(xPos, y, z, dx, dy, dz, 0);	
+		}
+	}
+	
+	yHeight = 6 * dy;
+	
+	// higher wall
+	for(int z = zPos + zWidth; z < zPos + 1.5 * zWidth; z += dz) {
+		for(int y = yPos; y < yPos + yHeight; y += dy) {
+			// left
+			cube(xPos - xLength, y, z, dx, dy, dz, 0);
+			
+			// right
+			cube(xPos, y, z, dx, dy, dz, 0);
+		}
+	}
+	
+	// back wall
+	for(int x = xPos; x > xPos - xLength; x -= dx) {
+		for(int y = yPos; y < yPos + yHeight; y += dy) {
+			cube(x, y, zPos + 2 * zWidth, dx, dy, dz, 0);
+		}
+	}
+	
+	glBindTexture(GL_TEXTURE_2D, _textureSidewalk);
+	
+	yPos = 0.11;
+	
+	dx = 0.5 * mTrackBlockSize;
+	dy = 0.1;
+	dz = 0.5 * mTrackBlockSize;
+	
+	zWidth = 6 * dz;
+	
+	// floor
+	for(int x = xPos; x > xPos - xLength; x -= dx) {
+		if(x < xPos)
+		for(int z = zPos; z < zPos + zWidth; z += dz) {
+			if(z < zPos + zWidth - dz)
+			cube(x, yPos, z, dx, dy, dz, 0);
+		} 
+	}
 }
 
 /*
  *  OpenGL (GLUT) calls this routine to display the scene
  */
-void display()
+void display(void)
 {
    const double len=2.0;  //  Length of axes
    //  Erase the window and the depth buffer
@@ -1872,12 +1932,11 @@ void display()
    startRaceLine();
    
    // Grass
-   glColor3f(0.4, 0.6, 0.2);
-   glBindTexture(GL_TEXTURE_2D, _textureGrass);
    grass();
    
    // Building
-
+   grandStand();
+   
 // //  Street Surface - Side Streets
 //   glColor3f(0.4, 0.4, 0.4);
 //   glBindTexture(GL_TEXTURE_2D,_textureAsphalt);
