@@ -93,7 +93,8 @@ _textureWarehouseWindow,
 _textureHeadLamp,
 _textureCarbonFiber,
 _textureWoodBeam,
-_textureChecker;
+_textureChecker,
+_textureTrackFence;
 
 //Light Vecotrs
 float Ambient[]   = {0.01*80 ,0.01*80 ,0.01*80 ,1.0};
@@ -105,7 +106,7 @@ float mTrackBlockSize = 4;
 float mTrackStartPosX = 12;
 float mTrackStartPosZ = 15;
 float mCarInitAngle = 180;
-int mCarMoveDelay = 5; // miliseconds per car steps
+int mCarMoveDelay = 1; // miliseconds per car steps
 
 // blue car
 float mCar1StepsInc = 0.1000;
@@ -201,6 +202,77 @@ static void cube(double x,double y,double z,
    //  Bottom
    texRepX = dx/texScale;
    texRepY = dz/texScale;
+   glNormal3f( 0,-one, 0);
+   glTexCoord2f(0.0,0.0); glVertex3f(-1,-1,-1);
+   glTexCoord2f(texRepX,0.0); glVertex3f(+1,-1,-1);
+   glTexCoord2f(texRepX,texRepY); glVertex3f(+1,-1,+1);
+   glTexCoord2f(0.0,texRepY); glVertex3f(-1,-1,+1);
+   //  End
+   glEnd();
+   //  Undo transofrmations
+   glPopMatrix();
+}
+
+static void block(double x,double y,double z,
+                 double dx,double dy,double dz,
+                 double th, float texScaleX, float texScaleY)
+{
+   //  Save transformation
+   glPushMatrix();
+   //  Offset, scale and rotate
+   glTranslated(x,y,z);
+   glRotated(th,0,1,0);
+   glScaled(dx,dy,dz);
+
+   //Texture repitition values
+   float texRepX = 1.0;
+   float texRepY = 1.0;
+
+   //  Cube
+   glBegin(GL_QUADS);
+   //  Front
+   texRepX = dx/texScaleX;
+   texRepY = dy/texScaleY;
+   glNormal3f( 0, 0, 1);
+   glTexCoord2f(0.0,0.0); glVertex3f(-1,-1, 1);
+   glTexCoord2f(texRepX,0.0); glVertex3f(+1,-1, 1);
+   glTexCoord2f(texRepX,texRepY); glVertex3f(+1,+1, 1);
+   glTexCoord2f(0.0,texRepY); glVertex3f(-1,+1, 1);
+   //  Back
+   texRepX = dx/texScaleX;
+   texRepY = dy/texScaleY;
+   glNormal3f( 0, 0,-1);
+   glTexCoord2f(0.0,0.0); glVertex3f(+1,-1,-1);
+   glTexCoord2f(texRepX,0.0); glVertex3f(-1,-1,-1);
+   glTexCoord2f(texRepX,texRepY); glVertex3f(-1,+1,-1);
+   glTexCoord2f(0.0,texRepY); glVertex3f(+1,+1,-1);
+   //  Right
+   texRepX = dz/texScaleX;
+   texRepY = dy/texScaleY;
+   glNormal3f(+1, 0, 0);
+   glTexCoord2f(0.0,0.0); glVertex3f(+1,-1,+1);
+   glTexCoord2f(texRepX,0.0); glVertex3f(+1,-1,-1);
+   glTexCoord2f(texRepX,texRepY); glVertex3f(+1,+1,-1);
+   glTexCoord2f(0.0,texRepY); glVertex3f(+1,+1,+1);
+   //  Left
+   texRepX = dz/texScaleX;
+   texRepY = dy/texScaleY;
+   glNormal3f(-1, 0, 0);
+   glTexCoord2f(0.0,0.0); glVertex3f(-1,-1,-1);
+   glTexCoord2f(texRepX,0.0); glVertex3f(-1,-1,+1);
+   glTexCoord2f(texRepX,texRepY); glVertex3f(-1,+1,+1);
+   glTexCoord2f(0.0,texRepY); glVertex3f(-1,+1,-1);
+   //  Top
+   texRepX = dx/texScaleX;
+   texRepY = dz/texScaleY;
+   glNormal3f( 0,+1, 0);
+   glTexCoord2f(0.0,0.0); glVertex3f(-1,+1,+1);
+   glTexCoord2f(texRepX,0.0); glVertex3f(+1,+1,+1);
+   glTexCoord2f(texRepX,texRepY); glVertex3f(+1,+1,-1);
+   glTexCoord2f(0.0,texRepY); glVertex3f(-1,+1,-1);
+   //  Bottom
+   texRepX = dx/texScaleX;
+   texRepY = dz/texScaleY;
    glNormal3f( 0,-one, 0);
    glTexCoord2f(0.0,0.0); glVertex3f(-1,-1,-1);
    glTexCoord2f(texRepX,0.0); glVertex3f(+1,-1,-1);
@@ -1385,6 +1457,115 @@ static void curve(double x, double y, double z,
    glPopMatrix();
 }
 
+void trackFence(void) {
+  	float xPos = mTrackStartPosX;
+	float zPos = mTrackStartPosZ;
+	float yPos = 0.25 * mTrackBlockSize;
+	float carPosY = yPos + 0.4;
+	float fenceThickness = 0.1;
+	float fenceWidth = 0.5 * mTrackBlockSize;
+	float dy = 0.5 * fenceWidth;
+//	float radius = dx * 4 / (mTrackBlockSize/2);
+	float fenceLoc = 0.75 * mTrackBlockSize;
+	float texScaleX = fenceWidth;
+	float texScaleY = 0.5 * fenceWidth;
+	
+	glColor3f(0.4, 0.4, 0.4);
+   	glBindTexture(GL_TEXTURE_2D,_textureTrackFence);
+	
+	// lane 1, step 0 - 12, direction -x
+	for(int i = 0; i <= 12; i++) {
+		if(i > 0 && i < 12) {
+			block(xPos, yPos, zPos-fenceLoc, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		}
+		block(xPos, yPos, zPos+mTrackBlockSize+fenceLoc, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		xPos -= mTrackBlockSize;
+	}
+	
+	// turn 1, step 13, quadran 3 (270 degree)
+//	curve(xPos+(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 270, radius);
+
+	// lane 2, step 14 - 16, direction -z
+	zPos -= mTrackBlockSize;
+	for(int i = 14; i <= 16; i++) {
+		if(i > 14 && i < 16) {
+			block(xPos+fenceLoc, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		}
+		block(xPos-mTrackBlockSize-fenceLoc, yPos, zPos, fenceThickness, dy, fenceWidth, 0, texScaleX, texScaleY);
+		zPos -= mTrackBlockSize;
+	}
+//	
+//	// turn 2, step 17, quadran 2 (180 degree)
+////	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
+//	
+//	// lane 3, step 18 - 20, direction +x
+//	xPos += mTrackBlockSize;
+//	for(int i = 18; i <= 20; i++) {
+//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		block(xPos, yPos, zPos-mTrackBlockSize, dx, dy, dz, 0, texScaleX, texScaleY);
+//		xPos += mTrackBlockSize;
+//	}
+//	
+//	// turn 3, step 21, quadran 4 (360 degree)
+//	zPos -= mTrackBlockSize;
+////	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
+//	xPos += mTrackBlockSize;
+//	
+//	// lane 4, step 22 - 24, direction -z
+//	zPos -= mTrackBlockSize;
+//	for(int i = 22; i <= 24; i++) {
+//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		block(xPos-mTrackBlockSize, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		zPos -= mTrackBlockSize;
+//	}
+//	
+//	// turn 4, step 25, quadran 2 (180 degree)
+////	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
+//	
+//	// lane 5, step 26 - 38, direction +x
+//	xPos += mTrackBlockSize;
+//	for(int i = 26; i <= 38; i++) {
+//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		block(xPos, yPos, zPos-mTrackBlockSize, dx, dy, dz, 0, texScaleX, texScaleY);
+//		xPos += mTrackBlockSize;
+//	}
+//	
+//	// turn 5, step 39, quadran 1 (90 degree)
+////	curve(xPos-(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 90, radius);
+//	
+//	// lane 6, step 40 - 42, direction +z
+//	zPos += mTrackBlockSize;
+//	for(int i = 40; i <= 42; i++) {
+//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		block(xPos+mTrackBlockSize, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		zPos += mTrackBlockSize;
+//	}
+//	
+//	// turn 6, step 43, quadran 4 (360 degree)
+////	curve(xPos-(mTrackBlockSize/2), yPos, zPos-(mTrackBlockSize/2), dx, dy, dz, 360, radius);
+//	
+//	// lane 7, step 44 - 46, direction -x
+//	xPos -= mTrackBlockSize;
+//	for(int i = 44; i <= 46; i++) {
+//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		block(xPos, yPos, zPos+mTrackBlockSize, dx, dy, dz, 0, texScaleX, texScaleY);
+//		xPos -= mTrackBlockSize;
+//	}
+//	
+//	// turn 7, step 47, quadran 2 (180 degree)
+//	zPos += mTrackBlockSize;
+////	curve(xPos+(mTrackBlockSize/2), yPos, zPos+(mTrackBlockSize/2), dx, dy, dz, 180, radius);
+//	xPos -= mTrackBlockSize;
+//	
+//	// lane 8, step 48 - 50, direction +z
+//	zPos += mTrackBlockSize;
+//	for(int i = 48; i <= 50; i++) {
+//		block(xPos, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		block(xPos+mTrackBlockSize, yPos, zPos, dx, dy, dz, 0, texScaleX, texScaleY);
+//		zPos += mTrackBlockSize;
+//	}
+}
+
 void track(void) {
   	float xPos = mTrackStartPosX;
 	float zPos = mTrackStartPosZ;
@@ -1552,13 +1733,23 @@ void startRaceLine(void) {
 	cube(xPos, yPos, zPos + mTrackBlockSize, dx, dy, dz, 0);
 	
 	// race line flag
-	cube(xPos, (yPos-mTrackBlockSize/4) + mTrackBlockSize * 2, zPos + mTrackBlockSize / 2, 0.1, 0.2 * mTrackBlockSize, mTrackBlockSize, 0);
+	cube(xPos, (yPos-mTrackBlockSize/4) + mTrackBlockSize * 2, zPos + mTrackBlockSize / 2, 0.01, 0.2 * mTrackBlockSize, mTrackBlockSize + 0.05 * mTrackBlockSize, 0);
 	
 	// race line gate
 	glColor3f(0.7, 0.5, 0.7);
 	glBindTexture(GL_TEXTURE_2D, _textureWoodBeam);
-	cube(xPos, yPos + mTrackBlockSize, zPos - mTrackBlockSize / 1.75, 0.05 * mTrackBlockSize, mTrackBlockSize, 0.05 * mTrackBlockSize, 0);
-	cube(xPos, yPos + mTrackBlockSize, zPos + mTrackBlockSize + mTrackBlockSize / 1.75, 0.05 * mTrackBlockSize, mTrackBlockSize, 0.05 * mTrackBlockSize, 0);
+	cube(xPos, yPos + mTrackBlockSize, zPos - mTrackBlockSize / 1.75, 0.02 * mTrackBlockSize, mTrackBlockSize, 0.02 * mTrackBlockSize, 0);
+	cube(xPos, yPos + mTrackBlockSize, zPos + mTrackBlockSize + mTrackBlockSize / 1.75, 0.02 * mTrackBlockSize, mTrackBlockSize, 0.02 * mTrackBlockSize, 0);
+}
+
+void grandStand(void) {
+	float xPos = mTrackStartPosX - (5 * mTrackBlockSize);
+	float yPos = 0.11;
+	float zPos = mTrackStartPosZ;
+	float dx = 0.25 * mTrackBlockSize;
+	float dy = 0.1;
+	float dz = 0.5 * mTrackBlockSize;
+	texScale = dx;
 }
 
 /*
@@ -1585,18 +1776,18 @@ void display()
    //  Perspective - set eye position
    if (mode)
    {
-      double Ex = -2*dim*Sin(th)*Cos(ph);
-      double Ey = +2*dim        *Sin(ph);
-      double Ez = +2*dim*Cos(th)*Cos(ph);
-      gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
+		double Ex = -2*dim*Sin(th)*Cos(ph);
+    	double Ey = +2*dim        *Sin(ph);
+    	double Ez = +2*dim*Cos(th)*Cos(ph);
+    	gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
    }
    //  First Person
    else
    {
-      refX = (dim * Sin(th)) + fpX;
-      refY = (dim * Sin(ph));
-      refZ = (dim * -Cos(th)) + fpZ;
-      gluLookAt(fpX,fpY,fpZ, refX,refY,refZ, 0,1,0);
+    	refX = (dim * Sin(th)) + fpX;
+    	refY = (dim * Sin(ph));
+    	refZ = (dim * -Cos(th)) + fpZ;
+    	gluLookAt(fpX,fpY,fpZ, refX,refY,refZ, 0,1,0);
    }
 
    //  Flat or smooth shading
@@ -1653,6 +1844,9 @@ void display()
 
 	// Track
    track();
+   
+   // Track Fence
+   trackFence();
    
    // Start Line
    startRaceLine();
@@ -2472,8 +2666,13 @@ void special(int key,int x,int y)
    else if (ch == 'x' || ch == 'X')
       axes = 1-axes;
    //  Switch projection mode
-   else if (ch == 'p' || ch == 'P')
-      mode = 1-mode;
+   else if (ch == 'p' || ch == 'P') {
+		mode = 1-mode;
+		if(mode) {
+			th=-180;         //  Azimuth of view angle
+			ph=35;         //  Elevation of view angle
+		}
+   }
    //  Toggle light movement
    else if (ch == 'm' || ch == 'M')
       move = 1-move;
@@ -2555,6 +2754,7 @@ void init(){
 	_textureCarbonFiber = LoadTexBMP("carbon-fiber.bmp");
 	_textureWoodBeam = LoadTexBMP("wood-beam.bmp");
 	_textureChecker = LoadTexBMP("checker.bmp");
+	_textureTrackFence = LoadTexBMP("track-fence.bmp");
 }
 /*
  *  Start up GLUT and tell it what to do
