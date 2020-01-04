@@ -94,7 +94,8 @@ _textureHeadLamp,
 _textureCarbonFiber,
 _textureWoodBeam,
 _textureChecker,
-_textureTrackFence;
+_textureTrackFence,
+_textureFloor;
 
 //Light Vecotrs
 float Ambient[]   = {0.01*80 ,0.01*80 ,0.01*80 ,1.0};
@@ -1708,13 +1709,13 @@ void track(void) {
 	car(mCar4PosX, carPosY, mCar4PosZ, carSizeX, carSizeY, carSizeZ, -(mCarInitAngle+mCar4Angle), 0.7, 0.7, 0.2);
 	
 	// first person cam on car 1 blue
-	if(!mode) {
-		fpX = mCar1PosX;
-		fpY = carPosY + mTrackBlockSize;
-		fpZ = mCar1PosZ;
-		th = (mCarInitAngle+mCar1Angle) + 90;
-		ph = -15;
-	}
+//	if(!mode) {
+//		fpX = mCar1PosX;
+//		fpY = carPosY + mTrackBlockSize;
+//		fpZ = mCar1PosZ;
+//		th = (mCarInitAngle+mCar1Angle) + 90;
+//		ph = -15;
+//	}
 }
 
 void grass(void) {
@@ -1766,75 +1767,51 @@ void startRaceLine(void) {
 }
 
 void grandStand(void) {
-	float xPos = mTrackStartPosX;
-	float yPos = 0.25 * mTrackBlockSize;
-	float zPos = mTrackStartPosZ + 2.5 * mTrackBlockSize;
-	float dx = 0.05 * mTrackBlockSize;
-	float dy = 0.25 * mTrackBlockSize;
-	float dz = 0.5 * mTrackBlockSize;
-	texScale = 0.5 * mTrackBlockSize;
+	float xPos = mTrackStartPosX - 6 * mTrackBlockSize;
+	float yPos = 0.11;
+	float zPos = mTrackStartPosZ + 3.5 * mTrackBlockSize;
+	float dx = 12 * mTrackBlockSize;
+	float dy = mTrackBlockSize;
+	float dz = 1.5 * mTrackBlockSize;
+	float texScale = 0.25 * dz;
 	
-	float xLength = 12 * mTrackBlockSize;
-	float yHeight = 2 * dy;
-	float zWidth = 2 * dz;
 	
+	// lower wall
 	glColor3f(1, 1, 1);
 	glBindTexture(GL_TEXTURE_2D, _textureGreyBrick);
 	
-	// lower wall
-	for(float z = zPos; z < zPos + zWidth; z += dz) {
-		for(float y = yPos; y < yPos + yHeight; y += dy) {
-			// left
-			cube(xPos - xLength, y, z, dx, dy, dz, 0);
-			
-			// right
-			cube(xPos, y, z, dx, dy, dz, 0);	
-		}
-	}
+	float wallThickness = 0.1 * mTrackBlockSize;
+	float wallHeight = 0.325 * dy;
+	float wallWidth = 0.4 * dz;
 	
-	yHeight = 4 * dy;
+		// right
+	cube(xPos+0.5*dx, yPos+wallHeight, zPos-0.5*dz, wallThickness, wallHeight, wallWidth, 0);
+	
+		// left
+	cube(xPos-0.5* dx, yPos+wallHeight, zPos-0.5*dz, wallThickness, wallHeight, wallWidth, 0);
 	
 	// higher wall
-	for(float z = zPos + zWidth; z < zPos + 2 * zWidth; z += dz) {
-		for(float y = yPos; y < yPos + yHeight; y += dy) {
-			// left
-			cube(xPos - xLength, y, z, dx, dy, dz, 0);
-			
-			// right
-			cube(xPos, y, z, dx, dy, dz, 0);
-		}
-	}
+	wallHeight = 0.625 * dy;
+	wallWidth = 0.6 * dz;
 	
-	float temp = dx;
-	dx = dz;
-	dz = temp;
+		// right
+	cube(xPos+0.5*dx, yPos+wallHeight, zPos+0.5*dz, wallThickness, wallHeight, wallWidth, 0);
+	
+		// left
+	cube(xPos-0.5* dx, yPos+wallHeight, zPos+0.5*dz, wallThickness, wallHeight, wallWidth, 0);
+	
+	wallWidth = 0.5 * dx;
 	
 	// back wall
-	for(float x = xPos; x > xPos - xLength; x -= dx) {
-		if(x < xPos)
-		for(float y = yPos; y < yPos + yHeight; y += dy) {
-			cube(x, y, zPos + 2 * zWidth, dx, dy, dz, 0);
-		}
-	}
+	cube(xPos, yPos+wallHeight, zPos+dz, wallWidth, wallHeight, wallThickness, 0);
 	
+	float floorWidth = dz;
+	float floorLength = dx / 2;
+	float floorHeight = 0.01 * dy;
+	
+	// ground floor
 	glBindTexture(GL_TEXTURE_2D, _textureSidewalk);
-	
-	yPos = 0.11;
-	
-	dx = 0.5 * mTrackBlockSize;
-	dy = 0.1;
-	dz = 0.5 * mTrackBlockSize;
-	
-	zWidth = 5 * dz;
-	
-	// floor
-	for(float x = xPos; x > xPos - xLength; x -= dx) {
-		if(x < xPos)
-		for(float z = zPos; z < zPos + zWidth; z += dz) {
-			if(z < zPos + zWidth - dz)
-			cube(x, yPos, z, dx, dy, dz, 0);
-		} 
-	}
+	cube(xPos, yPos, zPos, floorLength, floorHeight, floorWidth, 0);
 }
 
 /*
@@ -2839,6 +2816,7 @@ void init(){
 	_textureWoodBeam = LoadTexBMP("wood-beam.bmp");
 	_textureChecker = LoadTexBMP("checker.bmp");
 	_textureTrackFence = LoadTexBMP("track-fence.bmp");
+	_textureFloor = LoadTexBMP("floor.bmp");
 }
 /*
  *  Start up GLUT and tell it what to do
