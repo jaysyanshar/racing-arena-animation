@@ -1781,29 +1781,29 @@ void grandStand(void) {
 	glBindTexture(GL_TEXTURE_2D, _textureGreyBrick);
 	
 	float wallThickness = 0.1 * mTrackBlockSize;
-	float wallHeight = 0.325 * dy;
-	float wallWidth = 0.4 * dz;
+	float wallHeight1 = 0.325 * dy;
+	float wallWidth1 = 0.4 * dz;
 	
 		// right
-	cube(xPos+0.5*dx, yPos+wallHeight, zPos-0.5*dz, wallThickness, wallHeight, wallWidth, 0);
+	cube(xPos+0.5*dx, yPos+wallHeight1, zPos-0.5*dz, wallThickness, wallHeight1, wallWidth1, 0);
 	
 		// left
-	cube(xPos-0.5* dx, yPos+wallHeight, zPos-0.5*dz, wallThickness, wallHeight, wallWidth, 0);
+	cube(xPos-0.5*dx, yPos+wallHeight1, zPos-0.5*dz, wallThickness, wallHeight1, wallWidth1, 0);
 	
 	// higher wall
-	wallHeight = 0.625 * dy;
-	wallWidth = 0.6 * dz;
+	float wallHeight2 = 0.625 * dy;
+	float wallWidth2 = 0.6 * dz;
 	
 		// right
-	cube(xPos+0.5*dx, yPos+wallHeight, zPos+0.5*dz, wallThickness, wallHeight, wallWidth, 0);
+	cube(xPos+0.5*dx, yPos+wallHeight2, zPos+0.5*dz, wallThickness, wallHeight2, wallWidth2, 0);
 	
 		// left
-	cube(xPos-0.5* dx, yPos+wallHeight, zPos+0.5*dz, wallThickness, wallHeight, wallWidth, 0);
+	cube(xPos-0.5* dx, yPos+wallHeight2, zPos+0.5*dz, wallThickness, wallHeight2, wallWidth2, 0);
 	
-	wallWidth = 0.5 * dx;
+	float wallWidth3 = 0.5 * dx;
 	
 	// back wall
-	cube(xPos, yPos+wallHeight, zPos+dz, wallWidth, wallHeight, wallThickness, 0);
+	cube(xPos, yPos+wallHeight2, zPos+dz, wallWidth3, wallHeight2, wallThickness, 0);
 	
 	float floorWidth = dz;
 	float floorLength = dx / 2;
@@ -1812,6 +1812,26 @@ void grandStand(void) {
 	// ground floor
 	glBindTexture(GL_TEXTURE_2D, _textureSidewalk);
 	cube(xPos, yPos, zPos, floorLength, floorHeight, floorWidth, 0);
+	
+	float floorPosition = yPos + wallHeight1;
+	
+	// first floor
+	glBindTexture(GL_TEXTURE_2D, _textureFloor);
+	cube(xPos, yPos+2*wallHeight1, zPos, floorLength, floorHeight, floorWidth, 0);
+	
+	// second floor
+	cube(xPos, yPos+2*wallHeight2, zPos, floorLength, floorHeight, floorWidth, 0);
+	
+	// windows
+	float windowThickness = floorHeight;
+	float windowLength = floorLength;
+	float windowHeight = wallHeight2 - wallHeight1;
+	
+	// 1st floor windows
+	glColor3f(0.8, 0.8, 1);
+	glBindTexture(GL_TEXTURE_2D,_textureGlass);
+		// front
+	cube(xPos, yPos+1.5*wallHeight2, zPos-dz, windowLength, windowHeight, windowThickness, 0);
 }
 
 /*
