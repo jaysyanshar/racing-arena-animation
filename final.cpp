@@ -105,7 +105,8 @@ _textureWoodBeam,
 _textureChecker,
 _textureTrackFence,
 _textureFloor,
-_textureStandFence;
+_textureStandFence,
+_textureSponsor;
 
 //Light Vecotrs
 float Ambient[]   = {0.01*80 ,0.01*80 ,0.01*80 ,1.0};
@@ -1861,6 +1862,21 @@ void grandStand(void) {
 	block(xPos-dx/2, floor2FencePosY, zPos-0.5*dz, fenceThickness, fenceHeight, fenceLengthZ, 0, texScale, 0.5*texScale);
 }
 
+void sponsor(void) {
+  	float xPos = mTrackStartPosX - 3.5 * mTrackBlockSize;
+	float zPos = mTrackStartPosZ - 4.5 * mTrackBlockSize;
+	float yPos = 0.1 * mTrackBlockSize;
+	float carPosY = yPos + 0.4;
+	float dx = 2 * mTrackBlockSize;
+	float dy = 0.1;
+	float dz = 2 * mTrackBlockSize;
+	float radius = dx * 4 / (mTrackBlockSize/2);
+	texScale = dx;
+	
+	glBindTexture(GL_TEXTURE_2D, _textureSponsor);
+	cube(xPos, yPos, zPos, dx, dy, dz, 0);
+}
+
 /*
  *  OpenGL (GLUT) calls this routine to display the scene
  */
@@ -1965,6 +1981,9 @@ void display(void)
    
    // Building
    grandStand();
+   
+   // Sponsor
+   sponsor();
    
 // //  Street Surface - Side Streets
 //   glColor3f(0.4, 0.4, 0.4);
@@ -2871,6 +2890,7 @@ void init(){
 	_textureTrackFence = LoadTexBMP("track-fence.bmp");
 	_textureFloor = LoadTexBMP("floor.bmp");
 	_textureStandFence = LoadTexBMP("stand-fence.bmp");
+	_textureSponsor = LoadTexBMP("sponsor.bmp");
 }
 /*
  *  Start up GLUT and tell it what to do
