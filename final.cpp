@@ -1548,7 +1548,9 @@ void trackFence(void) {
 		if(i > 26 && i < 38) {
 			block(xPos, yPos, zPos+fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
 		}
-		block(xPos, yPos, zPos-mTrackBlockSize-fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		if(i > 27 && i < 37) {
+			block(xPos, yPos, zPos-mTrackBlockSize-fencePos, fenceWidth, dy, fenceThickness, 0, texScaleX, texScaleY);
+		}
 		xPos += mTrackBlockSize;
 	}
 	
@@ -1664,6 +1666,17 @@ void track(void) {
 	// lane 5, step 26 - 38, direction +x
 	xPos += mTrackBlockSize;
 	for(int i = 26; i <= 38; i++) {
+		// garage lane
+		if(i == 26) {
+			curve(xPos+(mTrackBlockSize/2), yPos, zPos-mTrackBlockSize-(mTrackBlockSize/2), dx, dy, dz, 180, radius/2);
+		}
+		if(i > 26 && i < 38) {
+			cube(xPos, yPos, zPos-2*mTrackBlockSize, dx, dy, dz, 0);
+		}
+		if(i == 38) {
+			curve(xPos-(mTrackBlockSize/2), yPos, zPos-mTrackBlockSize-(mTrackBlockSize/2), dx, dy, dz, 90, radius/2);
+		}
+		// main lane
 		cube(xPos, yPos, zPos, dx, dy, dz, 0);
 		cube(xPos, yPos, zPos-mTrackBlockSize, dx, dy, dz, 0);
 		xPos += mTrackBlockSize;
@@ -1775,6 +1788,57 @@ void startRaceLine(void) {
 	glBindTexture(GL_TEXTURE_2D, _textureWoodBeam);
 	cube(xPos, yPos + mTrackBlockSize, zPos - mTrackBlockSize / 1.75, 0.02 * mTrackBlockSize, mTrackBlockSize, 0.02 * mTrackBlockSize, 0);
 	cube(xPos, yPos + mTrackBlockSize, zPos + mTrackBlockSize + mTrackBlockSize / 1.75, 0.02 * mTrackBlockSize, mTrackBlockSize, 0.02 * mTrackBlockSize, 0);
+}
+
+void garage(void) {
+	float xPos = mTrackStartPosX - 7 * mTrackBlockSize + 6 * mTrackBlockSize;
+	float yPos = 0.11;
+	float zPos = mTrackStartPosZ - 9 * mTrackBlockSize - 3.5 * mTrackBlockSize;
+	float dx = 8 * mTrackBlockSize;
+	float dy = 0.5 * mTrackBlockSize;
+	float dz = mTrackBlockSize;
+	float texScale = 0.25 * dz;
+	
+	float carSizeX = 0.5 * mTrackBlockSize;
+	float carSizeY = 0.4 * mTrackBlockSize;
+	float carSizeZ = 0.4 * mTrackBlockSize;
+	
+	// higher wall
+	glColor3f(1, 1, 1);
+	glBindTexture(GL_TEXTURE_2D, _textureGreyBrick);
+	float wallThickness = 0.1 * mTrackBlockSize;
+	float wallHeight = dy;
+	float wallWidth = dz;
+	
+	// wall
+	for(float x=xPos+0.5*dx; x>=xPos-0.5*dx; x-=0.25*dx) {
+		cube(x, yPos+wallHeight, zPos, wallThickness, wallHeight, wallWidth, 0);
+	}
+	
+	// back wall
+	float wallWidthBack = 0.5 * dx;
+	cube(xPos, yPos+wallHeight, zPos-dz, wallWidthBack, wallHeight, wallThickness, 0);
+	
+	// floor
+	float floorWidth = dz;
+	float floorLength = 0.5 * dx;
+	float floorHeight = 0.01 * dy;
+	glBindTexture(GL_TEXTURE_2D, _textureSidewalk);
+	cube(xPos, yPos, zPos, floorLength, floorHeight, floorWidth, 0);
+	
+	// roof
+	glBindTexture(GL_TEXTURE_2D, _textureMetalRoof);
+	cube(xPos, yPos+2*wallHeight, zPos, floorLength, floorHeight, floorWidth, 0);
+	
+	// garage door
+	float garageDoorOpenHeight = 0.25 * dy;
+	float garageDoorWidth = 0.1125*dx;
+	float garageDoorThickness = floorHeight;
+	float garageDoorPositionX = -0.125*dx;
+	glBindTexture(GL_TEXTURE_2D, _textureGarageDoor);
+	for(float x=xPos+0.5*dx; x>xPos-0.5*dx; x-=0.25*dx) {
+		cube(x+garageDoorPositionX, yPos+1.75*wallHeight, zPos+dz, garageDoorWidth, garageDoorOpenHeight, garageDoorThickness, 0);
+	}
 }
 
 void grandStand(void) {
@@ -1981,6 +2045,7 @@ void display(void)
    
    // Building
    grandStand();
+   garage();
    
    // Sponsor
    sponsor();
