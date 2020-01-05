@@ -20,8 +20,17 @@
 #ifndef GL_CLAMP_TO_EDGE
 #define GL_CLAMP_TO_EDGE 0x812F
 #endif
+
+// projection mode
+enum ProjectionMode {
+	BIRD,
+	FIRST_PERSON,
+	SPECTATOR
+};
+
+// variables
 int axes=0;       //  Display axes
-int mode=1;       //  Projection mode
+ProjectionMode mode=BIRD;       //  Projection mode
 int move=1;       //  Move light
 int th=-180;         //  Azimuth of view angle
 int ph=35;         //  Elevation of view angle
@@ -95,7 +104,8 @@ _textureCarbonFiber,
 _textureWoodBeam,
 _textureChecker,
 _textureTrackFence,
-_textureFloor;
+_textureFloor,
+_textureStandFence;
 
 //Light Vecotrs
 float Ambient[]   = {0.01*80 ,0.01*80 ,0.01*80 ,1.0};
@@ -107,7 +117,7 @@ float mTrackBlockSize = 4;
 float mTrackStartPosX = 12;
 float mTrackStartPosZ = 15;
 float mCarInitAngle = 180;
-int mCarMoveDelay = 1; // miliseconds per car steps
+int mCarMoveDelay = 5; // miliseconds per car steps
 
 // blue car
 float mCar1StepsInc = 0.1000;
@@ -1709,13 +1719,13 @@ void track(void) {
 	car(mCar4PosX, carPosY, mCar4PosZ, carSizeX, carSizeY, carSizeZ, -(mCarInitAngle+mCar4Angle), 0.7, 0.7, 0.2);
 	
 	// first person cam on car 1 blue
-//	if(!mode) {
-//		fpX = mCar1PosX;
-//		fpY = carPosY + mTrackBlockSize;
-//		fpZ = mCar1PosZ;
-//		th = (mCarInitAngle+mCar1Angle) + 90;
-//		ph = -15;
-//	}
+	if(mode==FIRST_PERSON) {
+		fpX = mCar1PosX;
+		fpY = carPosY + mTrackBlockSize;
+		fpZ = mCar1PosZ;
+		th = (mCarInitAngle+mCar1Angle) + 90;
+		ph = -15;
+	}
 }
 
 void grass(void) {
@@ -1778,60 +1788,77 @@ void grandStand(void) {
 	
 	// lower wall
 	glColor3f(1, 1, 1);
-	glBindTexture(GL_TEXTURE_2D, _textureGreyBrick);
+	glBindTexture(GL_TEXTURE_2D, _textureWhiteBrick);
 	
 	float wallThickness = 0.1 * mTrackBlockSize;
 	float wallHeight1 = 0.325 * dy;
-	float wallWidth1 = 0.4 * dz;
-	
+	float wallWidth1 = 0.5 * dz;
 		// right
 	cube(xPos+0.5*dx, yPos+wallHeight1, zPos-0.5*dz, wallThickness, wallHeight1, wallWidth1, 0);
-	
 		// left
 	cube(xPos-0.5*dx, yPos+wallHeight1, zPos-0.5*dz, wallThickness, wallHeight1, wallWidth1, 0);
 	
 	// higher wall
 	float wallHeight2 = 0.625 * dy;
-	float wallWidth2 = 0.6 * dz;
-	
+	float wallWidth2 = 0.5 * dz;
+	float wallHeight3 = dy - wallHeight2;
+	float wallWidth3 = wallWidth2;
+
 		// right
-	cube(xPos+0.5*dx, yPos+wallHeight2, zPos+0.5*dz, wallThickness, wallHeight2, wallWidth2, 0);
-	
+	cube(xPos+0.5*dx, yPos+wallHeight2+wallHeight3, zPos+0.5*dz, wallThickness, wallHeight2+wallHeight3, wallWidth2, 0);
 		// left
-	cube(xPos-0.5* dx, yPos+wallHeight2, zPos+0.5*dz, wallThickness, wallHeight2, wallWidth2, 0);
-	
-	float wallWidth3 = 0.5 * dx;
+	cube(xPos-0.5* dx, yPos+wallHeight2+wallHeight3, zPos+0.5*dz, wallThickness, wallHeight2+wallHeight3, wallWidth2, 0);
 	
 	// back wall
-	cube(xPos, yPos+wallHeight2, zPos+dz, wallWidth3, wallHeight2, wallThickness, 0);
-	
-	float floorWidth = dz;
-	float floorLength = dx / 2;
-	float floorHeight = 0.01 * dy;
+	float wallWidthBack = 0.5 * dx;
+	cube(xPos, yPos+wallHeight2+wallHeight3, zPos+dz, wallWidthBack, wallHeight2+wallHeight3, wallThickness, 0);
 	
 	// ground floor
+	float floorWidth = dz;
+	float floorLength = 0.5 * dx;
+	float floorHeight = 0.01 * dy;
 	glBindTexture(GL_TEXTURE_2D, _textureSidewalk);
 	cube(xPos, yPos, zPos, floorLength, floorHeight, floorWidth, 0);
 	
-	float floorPosition = yPos + wallHeight1;
-	
 	// first floor
+	float floor1Position = yPos+2*wallHeight1;
 	glBindTexture(GL_TEXTURE_2D, _textureFloor);
-	cube(xPos, yPos+2*wallHeight1, zPos, floorLength, floorHeight, floorWidth, 0);
+	cube(xPos, floor1Position, zPos, floorLength, floorHeight, floorWidth, 0);
 	
 	// second floor
-	cube(xPos, yPos+2*wallHeight2, zPos, floorLength, floorHeight, floorWidth, 0);
+	float floor2Position = yPos+2*wallHeight2;
+	cube(xPos, floor2Position, zPos, floorLength, floorHeight, floorWidth, 0);
 	
-	// windows
-	float windowThickness = floorHeight;
-	float windowLength = floorLength;
-	float windowHeight = wallHeight2 - wallHeight1;
+	// roof
+	float roofPosition = yPos+2*(wallHeight2+wallHeight3);
+	glBindTexture(GL_TEXTURE_2D, _textureMetalRoof);
+	cube(xPos, roofPosition, zPos, floorLength, floorHeight, floorWidth, 0);
 	
-	// 1st floor windows
-	glColor3f(0.8, 0.8, 1);
-	glBindTexture(GL_TEXTURE_2D,_textureGlass);
+	// fence
+	float fenceThickness = floorHeight;
+	float fenceLengthX = floorLength;
+	float fenceLengthZ = 0.5 * dz;
+	float fenceHeight = (wallHeight2 - wallHeight1) / 2;
+	
+	// 1st floor fence
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D,_textureStandFence);
+	float floor1FencePosY = yPos+1.25*wallHeight2;
 		// front
-	cube(xPos, yPos+1.5*wallHeight2, zPos-dz, windowLength, windowHeight, windowThickness, 0);
+	block(xPos, floor1FencePosY, zPos-dz, fenceLengthX, fenceHeight, fenceThickness, 0, texScale, 0.5*texScale);
+		// right
+	block(xPos+dx/2, floor1FencePosY, zPos-0.5*dz, fenceThickness, fenceHeight, fenceLengthZ, 0, texScale, 0.5*texScale);
+		// left
+	block(xPos-dx/2, floor1FencePosY, zPos-0.5*dz, fenceThickness, fenceHeight, fenceLengthZ, 0, texScale, 0.5*texScale);
+	
+	// 2nd floor fence
+	float floor2FencePosY = floor1FencePosY+wallHeight2;
+		// front
+	block(xPos, floor2FencePosY, zPos-dz, fenceLengthX, fenceHeight, fenceThickness, 0, texScale, 0.5*texScale);
+		// right
+	block(xPos+dx/2, floor2FencePosY, zPos-0.5*dz, fenceThickness, fenceHeight, fenceLengthZ, 0, texScale, 0.5*texScale);
+		// left
+	block(xPos-dx/2, floor2FencePosY, zPos-0.5*dz, fenceThickness, fenceHeight, fenceLengthZ, 0, texScale, 0.5*texScale);
 }
 
 /*
@@ -1856,14 +1883,14 @@ void display(void)
    //  Undo previous transformations
    glLoadIdentity();
    //  Perspective - set eye position
-   if (mode)
+   if (mode==BIRD)
    {
 		double Ex = -2*dim*Sin(th)*Cos(ph);
     	double Ey = +2*dim        *Sin(ph);
     	double Ez = +2*dim*Cos(th)*Cos(ph);
     	gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
    }
-   //  First Person
+   //  First Person and Spectator
    else
    {
     	refX = (dim * Sin(th)) + fpX;
@@ -2748,11 +2775,17 @@ void special(int key,int x,int y)
       axes = 1-axes;
    //  Switch projection mode
    else if (ch == 'p' || ch == 'P') {
-		mode = 1-mode;
-		if(mode) {
-			th=-180;         //  Azimuth of view angle
+   		if(mode==BIRD) {
+   			mode=FIRST_PERSON;
+   		}
+   		else if(mode==FIRST_PERSON) {
+   			mode=SPECTATOR;
+   		}
+   		else if(mode==SPECTATOR) {
+   			mode=BIRD;
+   			th=-180;         //  Azimuth of view angle
 			ph=35;         //  Elevation of view angle
-		}
+   		}
    }
    //  Toggle light movement
    else if (ch == 'm' || ch == 'M')
@@ -2837,6 +2870,7 @@ void init(){
 	_textureChecker = LoadTexBMP("checker.bmp");
 	_textureTrackFence = LoadTexBMP("track-fence.bmp");
 	_textureFloor = LoadTexBMP("floor.bmp");
+	_textureStandFence = LoadTexBMP("stand-fence.bmp");
 }
 /*
  *  Start up GLUT and tell it what to do
