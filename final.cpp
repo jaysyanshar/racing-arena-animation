@@ -24,7 +24,10 @@
 // projection mode
 enum ProjectionMode {
 	BIRD,
-	FIRST_PERSON,
+	FIRST_PERSON_BLUE,
+	FIRST_PERSON_RED,
+	FIRST_PERSON_GREEN,
+	FIRST_PERSON_YELLOW,
 	SPECTATOR
 };
 
@@ -1733,11 +1736,35 @@ void track(void) {
 	car(mCar4PosX, carPosY, mCar4PosZ, carSizeX, carSizeY, carSizeZ, -(mCarInitAngle+mCar4Angle), 0.7, 0.7, 0.2);
 	
 	// first person cam on car 1 blue
-	if(mode==FIRST_PERSON) {
+	if(mode==FIRST_PERSON_BLUE) {
 		fpX = mCar1PosX;
 		fpY = carPosY + mTrackBlockSize;
 		fpZ = mCar1PosZ;
 		th = (mCarInitAngle+mCar1Angle) + 90;
+		ph = -15;
+	}
+	// first person cam on car 2 red
+	if(mode==FIRST_PERSON_RED) {
+		fpX = mCar2PosX;
+		fpY = carPosY + mTrackBlockSize;
+		fpZ = mCar2PosZ;
+		th = (mCarInitAngle+mCar2Angle) + 90;
+		ph = -15;
+	}
+	// first person cam on car 3 green
+	if(mode==FIRST_PERSON_GREEN) {
+		fpX = mCar3PosX;
+		fpY = carPosY + mTrackBlockSize;
+		fpZ = mCar3PosZ;
+		th = (mCarInitAngle+mCar3Angle) + 90;
+		ph = -15;
+	}
+	// first person cam on car 4 yellow
+	if(mode==FIRST_PERSON_YELLOW) {
+		fpX = mCar4PosX;
+		fpY = carPosY + mTrackBlockSize;
+		fpZ = mCar4PosZ;
+		th = (mCarInitAngle+mCar4Angle) + 90;
 		ph = -15;
 	}
 }
@@ -2860,15 +2887,30 @@ void special(int key,int x,int y)
    //  Switch projection mode
    else if (ch == 'p' || ch == 'P') {
    		if(mode==BIRD) {
-   			mode=FIRST_PERSON;
+   			mode=FIRST_PERSON_BLUE;
+   			fov = 90;
    		}
-   		else if(mode==FIRST_PERSON) {
+   		else if(mode==FIRST_PERSON_BLUE) {
+   			mode=FIRST_PERSON_RED;
+   			fov = 90;
+   		}
+   		else if(mode==FIRST_PERSON_RED) {
+   			mode=FIRST_PERSON_GREEN;
+   			fov = 90;
+   		}
+   		else if(mode==FIRST_PERSON_GREEN) {
+   			mode=FIRST_PERSON_YELLOW;
+   			fov = 90;
+   		}
+   		else if(mode==FIRST_PERSON_YELLOW) {
    			mode=SPECTATOR;
+   			fov=55;			// Field of view
    		}
    		else if(mode==SPECTATOR) {
    			mode=BIRD;
-   			th=-180;         //  Azimuth of view angle
-			ph=35;         //  Elevation of view angle
+   			th=-180;        // Azimuth of view angle
+			ph=35;         	// Elevation of view angle
+			fov=55;			// Field of view
    		}
    }
    //  Toggle light movement
